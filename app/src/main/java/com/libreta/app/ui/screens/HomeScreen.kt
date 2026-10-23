@@ -249,7 +249,7 @@ fun HomeScreen(nav: Nav) {
                             if (tags.isEmpty()) EmptyHint("Sin etiquetas todavía.")
                             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                                 tags.forEachIndexed { i, t ->
-                                    Sticker(t.name, crayon(t.color), rotation = listOf(-2f, 1.5f, -0.5f, 2f)[i % 4]) { nav.openNotes(null, t.id, null) }
+                                    Sticker(t.name, crayon(t.color), rotation = listOf(-2f, 1.5f, -0.5f, 2f)[i % 4], onClick = { nav.openNotes(null, t.id, null) })
                                 }
                             }
                         }

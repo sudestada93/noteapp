@@ -222,7 +222,7 @@ private fun SwipeTask(
         }
     })
     SwipeToDismissBox(
-        state, modifier,
+        state = state, modifier = modifier,
         backgroundContent = {
             val dir = state.dismissDirection
             val bg by animateColorAsState(if (dir == SwipeToDismissBoxValue.EndToStart) p.danger else p.success, label = "swipe")
