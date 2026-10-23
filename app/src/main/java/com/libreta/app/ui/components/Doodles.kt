@@ -79,7 +79,8 @@ private class Pen(val scope: DrawScope, val s: Float, val ink: Color, val stroke
         }
         scope.drawPath(sketch(scaled, closed, seed, 1.4f * s), ink, style = Stroke(stroke, cap = StrokeCap.Round, join = StrokeJoin.Round))
     }
-    fun line(vararg pts: Offset, seed: Int = 1) {
+    fun line(vararg xy: Float, seed: Int = 1) {
+        val pts = xy.toList().chunked(2).map { Offset(it[0], it[1]) }
         val scaled = pts.map { p(it.x, it.y) }
         scope.drawPath(sketch(scaled, false, seed, 1.0f * s), ink, style = Stroke(stroke, cap = StrokeCap.Round, join = StrokeJoin.Round))
     }
@@ -99,55 +100,55 @@ fun DoodleArt(kind: Doodle, modifier: Modifier = Modifier, size: Dp = 150.dp) {
         translate(top = -bob * 3 * s) {
             skyPen.shape(circlePts(14f, 19f, 6f, 10), null, 11)
             skyPen.shape(circlePts(23f, 16f, 8f, 10), null, 12)
-            skyPen.line(Offset(80f, 10f), Offset(80f, 20f), seed = 3)
-            skyPen.line(Offset(75f, 15f), Offset(85f, 15f), seed = 4)
+            skyPen.line(80f, 10f, 80f, 20f, seed = 3)
+            skyPen.line(75f, 15f, 85f, 15f, seed = 4)
         }
         when (kind) {
             Doodle.NOTES, Doodle.NOTEBOOK -> {
                 pen.shape(rectPts(28f, 26f, 48f, 60f), pal.primary, 1)
                 pen.shape(rectPts(28f, 26f, 10f, 60f), pal.orange, 2)
-                for (i in 0..3) pen.line(Offset(45f, 40f + i * 10), Offset(68f - (if (i == 3) 10 else 0), 40f + i * 10), seed = 10 + i)
+                for (i in 0..3) pen.line(45f, 40f + i * 10, 68f - (if (i == 3) 10 else 0), 40f + i * 10, seed = 10 + i)
                 pen.shape(listOf(Offset(70f, 70f), Offset(88f, 52f), Offset(93f, 57f), Offset(75f, 75f), Offset(68f, 77f)), pal.canary, 5)
             }
             Doodle.TASKS -> {
                 for (i in 0..2) {
                     pen.shape(rectPts(22f, 26f + i * 22, 14f, 14f), if (i < 2) pal.success else null, 20 + i)
-                    pen.line(Offset(44f, 33f + i * 22), Offset(80f - i * 8, 33f + i * 22), seed = 30 + i)
-                    if (i < 2) pen.line(Offset(24f, 33f + i * 22), Offset(29f, 38f + i * 22), Offset(40f, 22f + i * 22), seed = 40 + i)
+                    pen.line(44f, 33f + i * 22, 80f - i * 8, 33f + i * 22, seed = 30 + i)
+                    if (i < 2) pen.line(24f, 33f + i * 22, 29f, 38f + i * 22, 40f, 22f + i * 22, seed = 40 + i)
                 }
             }
             Doodle.SEARCH -> {
                 pen.shape(circlePts(44f, 44f, 22f), pal.iceWash, 50)
-                pen.line(Offset(60f, 60f), Offset(82f, 82f), seed = 51)
-                pen.line(Offset(62f, 64f), Offset(80f, 86f), seed = 52)
-                pen.line(Offset(34f, 36f), Offset(40f, 30f), seed = 53)
+                pen.line(60f, 60f, 82f, 82f, seed = 51)
+                pen.line(62f, 64f, 80f, 86f, seed = 52)
+                pen.line(34f, 36f, 40f, 30f, seed = 53)
             }
             Doodle.TRASH -> {
                 pen.shape(listOf(Offset(30f, 34f), Offset(70f, 34f), Offset(65f, 86f), Offset(35f, 86f)), pal.danger, 60)
                 pen.shape(rectPts(25f, 26f, 50f, 8f), null, 61)
                 pen.shape(rectPts(42f, 18f, 16f, 8f), null, 62)
-                for (i in 0..2) pen.line(Offset(42f + i * 8, 44f), Offset(42f + i * 8, 76f), seed = 63 + i)
+                for (i in 0..2) pen.line(42f + i * 8, 44f, 42f + i * 8, 76f, seed = 63 + i)
             }
             Doodle.TAGS -> {
                 pen.shape(listOf(Offset(22f, 30f), Offset(58f, 30f), Offset(80f, 52f), Offset(58f, 74f), Offset(22f, 74f)), pal.canary, 70)
                 pen.shape(circlePts(34f, 52f, 5f, 8), pal.surface, 71)
-                pen.line(Offset(40f, 52f), Offset(64f, 52f), seed = 72)
+                pen.line(40f, 52f, 64f, 52f, seed = 72)
             }
             Doodle.CALENDAR -> {
                 pen.shape(rectPts(22f, 28f, 58f, 54f), pal.surface, 80)
                 pen.shape(rectPts(22f, 28f, 58f, 13f), pal.orange, 81)
-                pen.line(Offset(34f, 22f), Offset(34f, 32f), seed = 82)
-                pen.line(Offset(68f, 22f), Offset(68f, 32f), seed = 83)
+                pen.line(34f, 22f, 34f, 32f, seed = 82)
+                pen.line(68f, 22f, 68f, 32f, seed = 83)
                 for (r in 0..2) for (c in 0..3) {
                     if (r == 1 && c == 2) pen.shape(rectPts(30f + c * 12, 48f + r * 11, 8f, 7f), pal.primary, 84)
-                    else pen.line(Offset(31f + c * 12, 52f + r * 11), Offset(36f + c * 12, 52f + r * 11), seed = 85 + r * 4 + c)
+                    else pen.line(31f + c * 12, 52f + r * 11, 36f + c * 12, 52f + r * 11, seed = 85 + r * 4 + c)
                 }
             }
             Doodle.BELL -> {
                 pen.shape(listOf(Offset(50f, 22f), Offset(68f, 36f), Offset(70f, 62f), Offset(80f, 72f), Offset(20f, 72f), Offset(30f, 62f), Offset(32f, 36f)), pal.canary, 90)
                 pen.shape(circlePts(50f, 80f, 6f, 8), pal.orange, 91)
-                pen.line(Offset(14f, 40f), Offset(20f, 44f), seed = 92)
-                pen.line(Offset(86f, 40f), Offset(80f, 44f), seed = 93)
+                pen.line(14f, 40f, 20f, 44f, seed = 92)
+                pen.line(86f, 40f, 80f, 44f, seed = 93)
             }
             Doodle.STAR -> {
                 val pts = (0 until 10).map { i ->
@@ -159,18 +160,18 @@ fun DoodleArt(kind: Doodle, modifier: Modifier = Modifier, size: Dp = 150.dp) {
             }
             Doodle.LOCK -> {
                 pen.shape(rectPts(28f, 46f, 44f, 38f), pal.primary, 110)
-                pen.line(Offset(36f, 46f), Offset(36f, 34f), Offset(42f, 24f), Offset(58f, 24f), Offset(64f, 34f), Offset(64f, 46f), seed = 111)
+                pen.line(36f, 46f, 36f, 34f, 42f, 24f, 58f, 24f, 64f, 34f, 64f, 46f, seed = 111)
                 pen.shape(circlePts(50f, 62f, 5f, 8), pal.ink, 112)
             }
             Doodle.TEMPLATE -> {
                 pen.shape(rectPts(34f, 20f, 44f, 56f), pal.surface, 120)
                 pen.shape(rectPts(24f, 30f, 44f, 56f), pal.success, 121)
-                for (i in 0..2) pen.line(Offset(32f, 44f + i * 10), Offset(58f, 44f + i * 10), seed = 122 + i)
+                for (i in 0..2) pen.line(32f, 44f + i * 10, 58f, 44f + i * 10, seed = 122 + i)
             }
             Doodle.HISTORY -> {
                 pen.shape(circlePts(50f, 52f, 30f), pal.iceWash, 130)
-                pen.line(Offset(50f, 34f), Offset(50f, 52f), Offset(64f, 60f), seed = 131)
-                pen.line(Offset(16f, 40f), Offset(22f, 50f), Offset(30f, 42f), seed = 132)
+                pen.line(50f, 34f, 50f, 52f, 64f, 60f, seed = 131)
+                pen.line(16f, 40f, 22f, 50f, 30f, 42f, seed = 132)
             }
         }
     }

@@ -51,7 +51,7 @@ class EditorBlock(b: Block) {
         mutableStateListOf<SnapshotStateList<String>>().apply { b.rows.forEach { add(mutableStateListOf<String>().apply { addAll(it) }) } }
     val focusRequester = FocusRequester()
 
-    val text: String get() = field.text.replace(ZW, "")
+    val text: String get() = this.field.text.replace(ZW, "")
 
     fun setText(t: String, cursor: Int = t.length) {
         field = TextFieldValue(ZW + t, TextRange(cursor + 1))

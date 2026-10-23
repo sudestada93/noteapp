@@ -120,7 +120,7 @@ fun TextInputDialog(
 }
 
 @Composable
-fun ConfirmDialog(title: String, message: String, confirmText: String, onDismiss: () -> Unit, onConfirm: () -> Unit, danger: Boolean = true) {
+fun ConfirmDialog(title: String, message: String, confirmText: String, onDismiss: () -> Unit, danger: Boolean = true, onConfirm: () -> Unit) {
     BrutalDialog(title, onDismiss, confirmText, onConfirm, danger = danger) {
         Text(message, style = T.body, color = LocalPalette.current.ink)
     }
