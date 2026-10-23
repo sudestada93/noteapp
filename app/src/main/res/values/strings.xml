@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Libreta</string>
+    <string name="sc_note">Nueva nota</string>
+    <string name="sc_task">Nueva tarea</string>
+    <string name="sc_audio">Nota de voz</string>
+    <string name="sc_scan">Escanear</string>
+    <string name="widget_desc">Creá notas, tareas, audios y fotos al instante</string>
+</resources>

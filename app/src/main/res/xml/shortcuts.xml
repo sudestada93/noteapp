@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut android:shortcutId="note" android:enabled="true" android:icon="@drawable/sc_note"
+        android:shortcutShortLabel="@string/sc_note">
+        <intent android:action="com.libreta.app.action.NOTE" android:targetPackage="com.libreta.app" android:targetClass="com.libreta.app.MainActivity" />
+    </shortcut>
+    <shortcut android:shortcutId="task" android:enabled="true" android:icon="@drawable/sc_task"
+        android:shortcutShortLabel="@string/sc_task">
+        <intent android:action="com.libreta.app.action.TASK" android:targetPackage="com.libreta.app" android:targetClass="com.libreta.app.MainActivity" />
+    </shortcut>
+    <shortcut android:shortcutId="audio" android:enabled="true" android:icon="@drawable/sc_audio"
+        android:shortcutShortLabel="@string/sc_audio">
+        <intent android:action="com.libreta.app.action.AUDIO" android:targetPackage="com.libreta.app" android:targetClass="com.libreta.app.MainActivity" />
+    </shortcut>
+    <shortcut android:shortcutId="scan" android:enabled="true" android:icon="@drawable/sc_camera"
+        android:shortcutShortLabel="@string/sc_scan">
+        <intent android:action="com.libreta.app.action.SCAN" android:targetPackage="com.libreta.app" android:targetClass="com.libreta.app.MainActivity" />
+    </shortcut>
+</shortcuts>
