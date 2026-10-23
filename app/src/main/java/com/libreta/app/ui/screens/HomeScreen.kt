@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -107,7 +108,8 @@ fun HomeScreen(nav: Nav) {
     val now = System.currentTimeMillis()
     val pendingToday = tasks.count { !it.done && it.dueAt != null && it.dueAt < Fmt.startOfDay(now) + 86_400_000L }
 
-    LazyColumn(Modifier.fillMaxSize().background(p.canvas), contentPadding = PaddingValues(bottom = 120.dp)) {
+    Box(Modifier.fillMaxSize().background(p.canvas)) {
+    LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 120.dp)) {
         item {
             Column(Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.statusBars).padding(horizontal = Dims.gutter, vertical = 14.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -262,6 +264,10 @@ fun HomeScreen(nav: Nav) {
                 BrutalButton("Personalizar inicio", { customize = true }, icon = Icons.Filled.Tune, style = BtnStyle.Secondary, small = true)
             }
         }
+    }
+
+    // franja bajo la barra de estado para que el contenido no se superponga al desplazar
+    Box(Modifier.fillMaxWidth().windowInsetsTopHeight(WindowInsets.statusBars).background(p.canvas))
     }
 
     if (customize) {

@@ -371,7 +371,7 @@ class Repository(
             Block(type = BlockType.TASK, text = "Probá una tarea con fecha y bandera", dueAt = System.currentTimeMillis() + 86_400_000L, flagged = true),
             Block(type = BlockType.H2, text = "Atajos de escritura"),
             Block(type = BlockType.BULLET, text = "`# ` título, `## ` subtítulo, `- ` viñeta, `1. ` lista numerada"),
-            Block(type = BlockType.BULLET, text = "`[] ` casilla, `[!] ` tarea, `> ` cita, ``` bloque de código, `---` separador"),
+            Block(type = BlockType.BULLET, text = "`[] ` casilla, `[!] ` tarea, `> ` cita, `!! ` destacado, `---` separador"),
             Block(type = BlockType.QUOTE, text = "La memoria es frágil; la tinta, paciente."),
             Block(type = BlockType.DIVIDER),
             Block(type = BlockType.TABLE, rows = listOf(listOf("Función", "Dónde"), listOf("Escanear documentos", "Botón +"), listOf("Grabar audio", "Barra del editor"), listOf("Bocetos a mano", "Barra del editor"))),
