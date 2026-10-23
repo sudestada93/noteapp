@@ -215,7 +215,7 @@ class EditorViewModel(app: Application, saved: SavedStateHandle) : AndroidViewMo
         } else save()
     }
 
-    fun setTitle(v: TextFieldValue) {
+    fun updateTitle(v: TextFieldValue) {
         val clean = v.text.replace("\n", "")
         if (clean != v.text) {
             title = v.copy(text = clean)

@@ -395,7 +395,7 @@ fun EditorScreen(start: String?, onBack: () -> Unit, onOpenNote: (String) -> Uni
                 // Título
                 BasicTextField(
                     value = vm.title,
-                    onValueChange = { vm.setTitle(it) },
+                    onValueChange = { vm.updateTitle(it) },
                     textStyle = TextStyle(fontFamily = Mono, fontWeight = FontWeight.Bold, fontSize = 27.sp, lineHeight = 33.sp, color = p.ink, letterSpacing = 0.3.sp),
                     cursorBrush = SolidColor(p.ink),
                     modifier = Modifier.fillMaxWidth(),
