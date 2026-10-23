@@ -360,6 +360,7 @@ private fun MediaFrame(content: @Composable () -> Unit) {
 
 @Composable
 private fun ImageBlock(block: EditorBlock, vm: EditorViewModel, env: EditorEnv) {
+    val p = LocalPalette.current
     val context = LocalContext.current
     val file = block.path?.let { vm.repo.fileFor(it) } ?: return
     MediaFrame {
