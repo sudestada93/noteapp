@@ -168,15 +168,15 @@ fun HomeScreen(nav: Nav) {
                     Triple("Boceto", Icons.Outlined.Brush) { nav.newNote("sketch", null, null) },
                     Triple("Plantilla", Icons.Outlined.Dashboard) { nav.newFromTemplate() },
                 )
-                LazyRow(contentPadding = PaddingValues(horizontal = g, vertical = 26.dp), horizontalArrangement = Arrangement.spacedBy(18.dp)) {
+                LazyRow(contentPadding = PaddingValues(horizontal = g, vertical = 26.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     items(actions.size) { i ->
                         val (label, icon, action) = actions[i]
-                        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(58.dp).clip(RoundedCornerShape(12.dp)).clickable(onClick = action)) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(70.dp).clip(RoundedCornerShape(12.dp)).clickable(onClick = action)) {
                             Box(Modifier.size(54.dp).border(1.dp, p.line, CircleShape), contentAlignment = Alignment.Center) {
                                 Icon(icon, null, tint = p.ink, modifier = Modifier.size(22.dp))
                             }
                             Spacer(Modifier.height(8.dp))
-                            Text(label.uppercase(), style = T.micro.copy(letterSpacing = T.micro.letterSpacing * 0.7f), color = p.inkSoft, maxLines = 1)
+                            Text(label.uppercase(), style = T.micro.copy(letterSpacing = T.micro.letterSpacing * 0.5f), color = p.inkSoft, maxLines = 1, softWrap = false)
                         }
                     }
                 }

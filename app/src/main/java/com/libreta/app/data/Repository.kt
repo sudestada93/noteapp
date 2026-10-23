@@ -363,7 +363,7 @@ class Repository(
         createTag("ideas", 4)
 
         val welcome = listOf(
-            Block(type = BlockType.CALLOUT, text = "Bienvenido a **Libreta** — tu segundo cerebro, en papel crema y tinta carbón."),
+            Block(type = BlockType.CALLOUT, text = "Bienvenido a **Libreta** — tu cuaderno de papel marfil y tinta azul."),
             Block(type = BlockType.H2, text = "Lo básico"),
             Block(type = BlockType.PARAGRAPH, text = "Escribí libremente. Usá **negrita**, *cursiva*, ++subrayado++, ~~tachado~~, ==resaltado== y `código`. Los enlaces también funcionan: [libreta](https://example.com)."),
             Block(type = BlockType.CHECK, text = "Tocá un casillero para tacharlo", checked = true),
@@ -378,7 +378,7 @@ class Repository(
             Block(type = BlockType.PARAGRAPH, text = "Organizá con libretas, pilas y etiquetas. Fijá notas en el inicio, agregá recordatorios y bloqueá la app con PIN o huella."),
         )
         createNote(personal.id, "👋 Empezá acá", welcome, listOf(tagImportante.id)).also { id ->
-            updateNote(id) { it.copy(isPinned = true, isShortcut = true, color = 1) }
+            updateNote(id) { it.copy(isPinned = true, isShortcut = true, color = 4) }
         }
         createNote(
             trabajo.id, "Reunión de equipo — planificación",

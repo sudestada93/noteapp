@@ -1,6 +1,6 @@
 # Libreta 📓
 
-App de notas para Android, nativa (Kotlin + Jetpack Compose), con las funciones de Evernote y un diseño **neo-brutalista**: papel crema, tinta carbón, sombras duras desplazadas, tipografía monoespaciada y acentos "crayón".
+App de notas para Android, nativa (Kotlin + Jetpack Compose), con las funciones de Evernote y un diseño **editorial**: papel marfil, serif clásica, líneas finas, arcos y grabados en tinta azul.
 
 ## Descargar el APK
 
@@ -41,18 +41,19 @@ Requiere Android 8.0 (API 26) o superior.
 | Exportar / compartir | PDF/impresión, Markdown, compartir como texto |
 | Sincronización / respaldo | Copia completa en `.zip` (notas, libretas, etiquetas, tareas y adjuntos) para exportar e importar |
 | Widget y accesos | Widget de captura rápida y atajos del ícono (nota, tarea, audio, escanear) |
-| — | Extras: deshacer/rehacer, comandos "/", atajos de markdown al escribir, modo oscuro "Pizarra", papel rayado/cuadriculado/punteado, tres tipografías de editor |
+| — | Extras: deshacer/rehacer, comandos "/", atajos de markdown al escribir, modo Noche, papel liso/rayado/cuadriculado/punteado, tres tipografías de editor, medidores de actividad |
 
 ## Diseño
 
-Basado en el sistema de diseño de referencia (MotherDuck: "terminal en crayón sobre papel crema") y llevado más lejos:
+Estilo editorial de libro antiguo, tranquilo y sin recargar:
 
-- **Sombras duras** `-x / +y` sin desenfoque; los botones y las tarjetas *se hunden* en su sombra al tocarlos (con resorte y vibración).
-- **JetBrains Mono** para la interfaz e **IBM Plex Sans/Serif** para leer y escribir notas largas.
-- **Crayones** (cielo, canario, naranja, coral, menta, lila, lima, pervinca) para libretas, etiquetas y bordes "lápices en un vaso".
-- **Ilustraciones a mano** dibujadas en código, con relleno *mal registrado* estilo risografía y animación sutil.
-- **Marquesina** amarilla, tarjetas tipo libro para libretas, etiquetas como stickers levemente rotados.
-- Tema oscuro **Pizarra** con sombras celestes.
+- **Papel marfil** (`#F5F0E6`), tinta cálida casi negra, **sepia** para la única acción principal y **mostaza** solo como acento (subrayados, la pestaña activa, el resaltado).
+- **Cormorant Garamond** para títulos, citas y números grandes; **Raleway** para la interfaz, con versalitas espaciadas en etiquetas pequeñas.
+- **Líneas finas** en lugar de sombras: el papel no tiene espesor. Listas tipo índice, metadatos de la nota como ficha de biblioteca.
+- **Arcos**: la portada del inicio, las pestañas de navegación y los medidores de actividad.
+- **Grabados en tinta azul** (libros con pluma, tintero, reloj de bolsillo, llave, lupa, libro abierto, laurel) dibujados con sombreado de líneas; ver `tools/engravings`.
+- Un único **panel azul tinta** por pantalla (la nota fijada) para dar contraste.
+- Modo **Noche**: tapa de libro oscura con tinta marfil.
 
 ## Compilar localmente
 
@@ -72,4 +73,4 @@ Se necesita JDK 17 y el Android SDK (API 35). La clave `app/libreta-release.jks`
 - `ui/components/` — sistema de diseño (superficies presionables, botones, stickers, hojas, diálogos, ilustraciones).
 - `reminders/` — alarmas y notificaciones. `widget/` — widget de inicio.
 
-Fuentes bajo SIL Open Font License 1.1 (ver `app/src/main/assets/licenses`).
+Fuentes (Cormorant Garamond, Raleway, IBM Plex, JetBrains Mono) bajo SIL Open Font License 1.1 (ver `app/src/main/assets/licenses`).

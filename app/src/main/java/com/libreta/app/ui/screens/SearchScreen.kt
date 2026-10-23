@@ -217,7 +217,7 @@ fun SearchScreen(initial: String?, nav: Nav) {
             LazyColumn(contentPadding = PaddingValues(start = 20.dp, end = 16.dp, top = 12.dp, bottom = 120.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 item {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("${results.size} resultados", style = T.heading, color = p.ink, modifier = Modifier.weight(1f))
+                        Text(if (results.size == 1) "1 resultado" else "${results.size} resultados", style = T.heading, color = p.ink, modifier = Modifier.weight(1f))
                         Row(Modifier.clickable { saving = true }.padding(6.dp), verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Filled.BookmarkAdd, null, tint = p.ink, modifier = Modifier.size(16.dp))
                             Spacer(Modifier.width(4.dp))
