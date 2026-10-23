@@ -148,9 +148,9 @@ fun SearchScreen(initial: String?, nav: Nav) {
     val words = parseQuery(q).words
 
     Column(Modifier.fillMaxSize().background(p.canvas)) {
-        Column(Modifier.fillMaxWidth().background(p.canary).windowInsetsPadding(WindowInsets.statusBars).padding(12.dp)) {
+        Column(Modifier.fillMaxWidth().background(p.canvas).windowInsetsPadding(WindowInsets.statusBars).padding(horizontal = 14.dp, vertical = 8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                BareIcon(Icons.AutoMirrored.Filled.ArrowBack, "Atrás", nav.back, tint = Color(0xFF383838))
+                BareIcon(Icons.AutoMirrored.Filled.ArrowBack, "Atrás", nav.back)
                 Spacer(Modifier.width(6.dp))
                 BrutalTextField(
                     q, { q = it }, placeholder = "Buscar notas, #etiquetas, tiene:imagen…", leading = Icons.Filled.Search,
@@ -169,7 +169,7 @@ fun SearchScreen(initial: String?, nav: Nav) {
                 }
             }
         }
-        androidx.compose.foundation.layout.Box(Modifier.fillMaxWidth().height(Dims.border).background(p.line))
+        androidx.compose.foundation.layout.Box(Modifier.fillMaxWidth().height(1.dp).background(p.line))
         if (q.isBlank()) {
             LazyColumn(contentPadding = PaddingValues(start = 20.dp, end = 16.dp, top = 16.dp, bottom = 120.dp)) {
                 if (settings.recentSearches.isNotEmpty()) {
@@ -188,7 +188,7 @@ fun SearchScreen(initial: String?, nav: Nav) {
                     item { SectionHeader("Búsquedas guardadas") }
                     item {
                         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                            saved.forEach { s -> Sticker("⌕ " + s.name, p.primary, leading = null, onClick = { q = s.query }, onRemove = { scope.launch { repo.deleteSearch(s.id) } }) }
+                            saved.forEach { s -> Sticker(s.name, p.art, onClick = { q = s.query }, onRemove = { scope.launch { repo.deleteSearch(s.id) } }) }
                         }
                     }
                 }
@@ -217,7 +217,7 @@ fun SearchScreen(initial: String?, nav: Nav) {
             LazyColumn(contentPadding = PaddingValues(start = 20.dp, end = 16.dp, top = 12.dp, bottom = 120.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 item {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("${results.size} RESULTADOS", style = T.label, color = p.ink, modifier = Modifier.weight(1f))
+                        Text("${results.size} resultados", style = T.heading, color = p.ink, modifier = Modifier.weight(1f))
                         Row(Modifier.clickable { saving = true }.padding(6.dp), verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Filled.BookmarkAdd, null, tint = p.ink, modifier = Modifier.size(16.dp))
                             Spacer(Modifier.width(4.dp))
@@ -228,9 +228,9 @@ fun SearchScreen(initial: String?, nav: Nav) {
                 items(results, key = { it.note.id }) { item ->
                     Pressable(Modifier.fillMaxWidth(), onClick = { scope.launch { repo.prefs.addRecentSearch(q.trim()) }; nav.openNote(item.note.id) }) {
                         Column(Modifier.padding(12.dp)) {
-                            Text(highlight(item.note.title.ifBlank { "Sin título" }, words, p.canary), style = T.body.copy(fontWeight = FontWeight.Bold), color = p.ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            Text(highlight(item.note.title.ifBlank { "Sin título" }, words, p.highlight), style = T.headingSm, color = p.ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
                             val snippet = snippet(if (item.note.isLocked) "🔒" else item.note.plainText, words)
-                            if (snippet.isNotBlank()) Text(highlight(snippet, words, p.canary), style = T.caption, color = p.inkSoft, maxLines = 3, overflow = TextOverflow.Ellipsis)
+                            if (snippet.isNotBlank()) Text(highlight(snippet, words, p.highlight), style = T.bodySm, color = p.inkSoft, maxLines = 3, overflow = TextOverflow.Ellipsis)
                             Text((item.notebook?.name ?: "") + " · " + Fmt.relative(item.note.updatedAt), style = T.micro, color = p.inkFaint, modifier = Modifier.padding(top = 4.dp))
                         }
                     }
@@ -258,7 +258,7 @@ private fun highlight(text: String, words: List<String>, color: Color) = buildAn
         words.filter { it.isNotBlank() }.forEach { w ->
             var i = n.indexOf(w)
             while (i >= 0) {
-                addStyle(SpanStyle(background = color, color = Color(0xFF383838)), i, i + w.length)
+                addStyle(SpanStyle(background = color), i, i + w.length)
                 i = n.indexOf(w, i + w.length)
             }
         }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="cream_paper">#F4EFEA</color>
-    <color name="charcoal_ink">#383838</color>
-    <color name="sky_crayon">#6FC2FF</color>
-    <color name="canary">#FFDE00</color>
-    <color name="duck_orange">#FF9538</color>
+    <color name="cream_paper">#F5F0E6</color>
+    <color name="ink">#1F1B16</color>
+    <color name="sepia">#4A2C17</color>
+    <color name="mustard">#E2B33F</color>
+    <color name="engraving_blue">#2F55A4</color>
 </resources>

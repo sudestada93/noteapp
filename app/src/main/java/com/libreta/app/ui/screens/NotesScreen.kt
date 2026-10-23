@@ -130,14 +130,14 @@ fun NotesScreen(nbId: String?, tagId: String?, filterArg: String?, nav: Nav, sho
             }
         }
         if (nbId == null && tagId == null) {
-            LazyRow(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            LazyRow(contentPadding = PaddingValues(horizontal = 22.dp, vertical = 14.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(NoteFilters.size) { i ->
                     val (k, l) = NoteFilters[i]
                     FilterPill(l, filter == k, { filter = k })
                 }
             }
         } else {
-            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.fillMaxWidth().padding(horizontal = 22.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(nb?.stack?.let { "PILA: ${it.uppercase()}" } ?: "", style = T.micro, color = p.inkSoft, modifier = Modifier.weight(1f))
                 BrutalButton("Nueva nota", { nav.newNote(null, nbId, tagId) }, icon = Icons.AutoMirrored.Filled.NoteAdd, small = true)
             }
@@ -151,9 +151,9 @@ fun NotesScreen(nbId: String?, tagId: String?, filterArg: String?, nav: Nav, sho
             LazyVerticalStaggeredGrid(
                 columns = StaggeredGridCells.Fixed(if (view == 2) 2 else 1),
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(start = 20.dp, end = 16.dp, top = 4.dp, bottom = 120.dp),
-                horizontalArrangement = Arrangement.spacedBy(14.dp),
-                verticalItemSpacing = if (view == 3) 8.dp else 14.dp,
+                contentPadding = PaddingValues(start = 22.dp, end = 22.dp, top = 4.dp, bottom = 140.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalItemSpacing = if (view == 0 || view == 3) 0.dp else 12.dp,
             ) {
                 items(list, key = { it.note.id }) { item ->
                     NoteCard(
@@ -173,7 +173,7 @@ fun NotesScreen(nbId: String?, tagId: String?, filterArg: String?, nav: Nav, sho
     when (sheet) {
         "sort" -> BrutalSheet({ sheet = null }, "Ordenar y ver") {
             listOf("Última modificación", "Fecha de creación", "Título (A–Z)").forEachIndexed { i, l ->
-                SheetItem(Icons.AutoMirrored.Filled.Sort, l, trailing = { if (settings.sort == i) Text("●", color = p.primary, style = T.label) }) {
+                SheetItem(Icons.AutoMirrored.Filled.Sort, l, trailing = { if (settings.sort == i) Text("●", color = p.canary, style = T.label) }) {
                     scope.launch { repo.prefs.setSort(i) }; sheet = null
                 }
             }
@@ -181,7 +181,7 @@ fun NotesScreen(nbId: String?, tagId: String?, filterArg: String?, nav: Nav, sho
             Text("VISTA", style = T.micro, color = p.inkSoft)
             Spacer(Modifier.height(8.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                listOf("Lista", "Tarjetas", "Grilla", "Compacta").forEachIndexed { i, l ->
+                listOf("Lista", "Fichas", "Grilla", "Compacta").forEachIndexed { i, l ->
                     FilterPill(l, view == i, { scope.launch { repo.prefs.setListView(i) } })
                 }
             }

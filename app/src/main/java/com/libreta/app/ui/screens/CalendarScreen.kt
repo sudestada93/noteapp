@@ -49,6 +49,7 @@ import com.libreta.app.ui.components.BrutalShape
 import com.libreta.app.ui.components.CrayonCheckbox
 import com.libreta.app.ui.components.LibretaTopBar
 import com.libreta.app.ui.components.hardShadow
+import com.libreta.app.ui.components.hairlineBottom
 import com.libreta.app.ui.components.rememberApp
 import com.libreta.app.ui.theme.Dims
 import com.libreta.app.ui.theme.LocalPalette
@@ -91,21 +92,21 @@ fun CalendarScreen(nav: Nav) {
         LibretaTopBar("Calendario", onBack = nav.back) {
             BareIcon(Icons.Filled.Today, "Hoy", { month = today; selected = today })
         }
-        Column(Modifier.padding(16.dp)) {
+        Column(Modifier.padding(horizontal = 18.dp, vertical = 12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 BareIcon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, "Anterior", {
                     month = Calendar.getInstance().apply { timeInMillis = monthStart; add(Calendar.MONTH, -1) }.timeInMillis
                 })
-                Text(Fmt.monthYear(monthStart).uppercase(), style = T.headingSm, color = p.ink, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+                Text(Fmt.monthYear(monthStart), style = T.headingLg, color = p.ink, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
                 BareIcon(Icons.AutoMirrored.Filled.KeyboardArrowRight, "Siguiente", {
                     month = Calendar.getInstance().apply { timeInMillis = monthStart; add(Calendar.MONTH, 1) }.timeInMillis
                 })
             }
             Spacer(Modifier.height(10.dp))
-            Column(Modifier.fillMaxWidth().hardShadow(p.shadow, 5.dp).clip(BrutalShape).background(p.surface).border(Dims.border, p.line, BrutalShape)) {
-                Row(Modifier.fillMaxWidth().background(p.ink).padding(vertical = 6.dp)) {
+            Column(Modifier.fillMaxWidth()) {
+                Row(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
                     listOf("L", "M", "M", "J", "V", "S", "D").forEach {
-                        Text(it, style = T.micro, color = p.canvas, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+                        Text(it, style = T.micro, color = p.inkFaint, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
                     }
                 }
                 val cells = firstDow + days
@@ -123,17 +124,17 @@ fun CalendarScreen(nav: Nav) {
                                     val isSel = d == selected
                                     val isToday = d == today
                                     Column(
-                                        Modifier.fillMaxSize().padding(2.dp).clip(BrutalShape)
-                                            .background(if (isSel) p.primary else if (isToday) p.canary else Color.Transparent)
-                                            .then(if (isSel || isToday) Modifier.border(1.5.dp, p.line, BrutalShape) else Modifier)
+                                        Modifier.fillMaxSize().padding(4.dp).clip(CircleShape)
+                                            .background(if (isSel) p.ink else Color.Transparent)
+                                            .then(if (isToday && !isSel) Modifier.border(1.dp, p.canary, CircleShape) else Modifier)
                                             .clickable { selected = d },
                                         horizontalAlignment = Alignment.CenterHorizontally,
                                         verticalArrangement = Arrangement.Center,
                                     ) {
-                                        Text("$day", style = T.bodySm.copy(fontWeight = if (isToday || isSel) FontWeight.Bold else FontWeight.Normal), color = if (isSel || isToday) Color(0xFF383838) else p.ink)
+                                        Text("$day", style = T.headingSm.copy(fontSize = T.headingSm.fontSize * 0.85f), color = if (isSel) p.canvas else p.ink)
                                         Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                                            if (list.any { it.kind == 0 }) Dot(Color(0xFF54B4DE))
-                                            if (list.any { it.kind == 1 }) Dot(p.orange)
+                                            if (list.any { it.kind == 0 }) Dot(p.art)
+                                            if (list.any { it.kind == 1 }) Dot(p.canary)
                                             if (list.any { it.kind == 2 }) Dot(p.success)
                                         }
                                     }
@@ -145,24 +146,23 @@ fun CalendarScreen(nav: Nav) {
             }
             Spacer(Modifier.height(8.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
-                Legend(Color(0xFF54B4DE), "Notas"); Legend(p.orange, "Recordatorios"); Legend(p.success, "Tareas")
+                Legend(p.art, "Notas"); Legend(p.canary, "Recordatorios"); Legend(p.success, "Tareas")
             }
         }
-        Text(Fmt.dayHeader(selected).uppercase(), style = T.label, color = p.ink, modifier = Modifier.padding(horizontal = 16.dp))
+        Text(Fmt.dayHeader(selected), style = T.heading, color = p.ink, modifier = Modifier.padding(horizontal = 22.dp, vertical = 6.dp))
         val dayList = byDay[selected].orEmpty().sortedBy { it.time }
-        LazyColumn(contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 120.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        LazyColumn(contentPadding = PaddingValues(start = 22.dp, end = 22.dp, top = 4.dp, bottom = 120.dp)) {
             if (dayList.isEmpty()) item { Text("Nada este día.", style = T.bodySm, color = p.inkSoft) }
             items(dayList) { e ->
                 val icon: ImageVector = when (e.kind) { 0 -> Icons.Filled.EditNote; 1 -> Icons.Filled.Alarm; else -> Icons.Filled.TaskAlt }
                 Row(
-                    Modifier.fillMaxWidth().clip(BrutalShape).background(p.surface).border(1.5.dp, p.line, BrutalShape)
-                        .clickable { e.noteId?.let(nav.openNote) ?: nav.go("tasks") }.padding(12.dp),
+                    Modifier.fillMaxWidth().clickable { e.noteId?.let(nav.openNote) ?: nav.go("tasks") }.hairlineBottom(p.line).padding(vertical = 13.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     if (e.kind == 2 && e.taskId != null) {
                         CrayonCheckbox(e.done, {
                             scope.launch { tasks.firstOrNull { it.id == e.taskId }?.let { repo.saveTask(it.copy(done = !it.done)) } }
-                        }, round = true, color = p.primary)
+                        }, round = true)
                     } else Icon(icon, null, tint = p.ink, modifier = Modifier.size(20.dp))
                     Spacer(Modifier.width(10.dp))
                     Text(e.title, style = T.body, color = if (e.done) p.inkFaint else p.ink, modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)

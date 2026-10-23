@@ -24,6 +24,7 @@ enum class HomeWidget(val label: String) {
     PINNED("Nota fijada"),
     RECENT("Notas recientes"),
     TASKS("Mis tareas"),
+    ACTIVITY("Actividad"),
     SHORTCUTS("Atajos"),
     REMINDERS("Recordatorios"),
     NOTEBOOKS("Libretas"),
@@ -31,10 +32,10 @@ enum class HomeWidget(val label: String) {
 }
 
 data class Settings(
-    val themeMode: Int = 0, // 0 sistema, 1 papel (claro), 2 pizarra (oscuro)
-    val editorFont: Int = 0, // 0 sans, 1 mono, 2 serif
+    val themeMode: Int = 0, // 0 sistema, 1 papel (claro), 2 noche (oscuro)
+    val editorFont: Int = 0, // 0 serif, 1 sans, 2 mono
     val editorFontSize: Float = 16f,
-    val paperStyle: Int = 1, // 0 liso, 1 rayado, 2 cuadriculado, 3 punteado
+    val paperStyle: Int = 0, // 0 liso, 1 rayado, 2 cuadriculado, 3 punteado
     val listView: Int = 1, // 0 lista, 1 tarjetas, 2 grilla, 3 compacta
     val sort: Int = 0, // 0 actualización, 1 creación, 2 título
     val defaultNotebookId: String? = null,
@@ -82,7 +83,7 @@ class Prefs(private val context: Context) {
             themeMode = p[K.theme] ?: 0,
             editorFont = p[K.font] ?: 0,
             editorFontSize = p[K.fontSize] ?: 16f,
-            paperStyle = p[K.paper] ?: 1,
+            paperStyle = p[K.paper] ?: 0,
             listView = p[K.listView] ?: 1,
             sort = p[K.sort] ?: 0,
             defaultNotebookId = p[K.defaultNb],

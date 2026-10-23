@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.libreta.app.ui.theme.LocalPalette
@@ -59,16 +60,16 @@ fun PinPad(
         }
     }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(title.uppercase(), style = T.headingSm, color = p.ink)
+        Text(title, style = T.heading, color = p.ink)
         Spacer(Modifier.height(6.dp))
         Text(subtitle, style = T.bodySm, color = p.inkSoft)
         Spacer(Modifier.height(22.dp))
         Row(Modifier.offset { IntOffset(shake.value.roundToInt(), 0) }, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
             repeat(length) { i ->
                 Box(
-                    Modifier.size(18.dp).clip(CircleShape)
-                        .background(if (i < pin.length) p.primary else p.surface)
-                        .border(2.dp, p.line, CircleShape),
+                    Modifier.size(13.dp).clip(CircleShape)
+                        .background(if (i < pin.length) p.ink else Color.Transparent)
+                        .border(1.3.dp, p.inkSoft, CircleShape),
                 )
             }
         }
@@ -79,15 +80,15 @@ fun PinPad(
                 r.forEach { k ->
                     when (k) {
                         "bio" -> if (onBiometric != null) {
-                            Pressable(Modifier.size(68.dp), color = p.iceWash, onClick = onBiometric) {
+                            Pressable(Modifier.size(68.dp), color = Color.Transparent, shape = CircleShape, onClick = onBiometric) {
                                 Box(Modifier.size(68.dp), contentAlignment = Alignment.Center) { Icon(Icons.Filled.Fingerprint, "Huella", tint = p.ink) }
                             }
                         } else Spacer(Modifier.size(68.dp))
-                        "del" -> Pressable(Modifier.size(68.dp), color = p.surface, onClick = { pin = pin.dropLast(1) }) {
+                        "del" -> Pressable(Modifier.size(68.dp), color = Color.Transparent, shape = CircleShape, border = 0.dp, onClick = { pin = pin.dropLast(1) }) {
                             Box(Modifier.size(68.dp), contentAlignment = Alignment.Center) { Icon(Icons.AutoMirrored.Filled.Backspace, "Borrar", tint = p.ink) }
                         }
-                        else -> Pressable(Modifier.size(68.dp), color = p.surface, onClick = { press(k) }) {
-                            Box(Modifier.size(68.dp), contentAlignment = Alignment.Center) { Text(k, style = T.heading, color = p.ink) }
+                        else -> Pressable(Modifier.size(68.dp), color = Color.Transparent, shape = CircleShape, onClick = { press(k) }) {
+                            Box(Modifier.size(68.dp), contentAlignment = Alignment.Center) { Text(k, style = T.headingLg.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Light), color = p.ink) }
                         }
                     }
                 }

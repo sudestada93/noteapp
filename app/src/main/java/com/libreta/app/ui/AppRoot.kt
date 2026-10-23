@@ -28,6 +28,20 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.NoteAdd
+import androidx.compose.material.icons.outlined.AttachFile
+import androidx.compose.material.icons.outlined.Brush
+import androidx.compose.material.icons.outlined.CameraAlt
+import androidx.compose.material.icons.outlined.Dashboard
+import androidx.compose.material.icons.outlined.DocumentScanner
+import androidx.compose.material.icons.outlined.GridView
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Mic
+import androidx.compose.material.icons.outlined.StickyNote2
+import androidx.compose.material.icons.outlined.TaskAlt
+import androidx.compose.foundation.shape.CircleShape
+import com.libreta.app.ui.components.ArchShape
+import com.libreta.app.ui.components.SheetItem
 import androidx.compose.material.icons.automirrored.filled.NoteAdd
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AttachFile
@@ -228,23 +242,23 @@ private fun BottomBar(route: String, nav: NavHostController, onCreate: () -> Uni
     }
     Box(Modifier.fillMaxWidth()) {
         Row(
-            Modifier.fillMaxWidth().background(p.surface)
-                .drawBehind { drawLine(p.line, Offset(0f, 0f), Offset(size.width, 0f), Dims.border.toPx()) }
-                .navigationBarsPadding().height(66.dp).padding(horizontal = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            Modifier.fillMaxWidth().background(p.canvas)
+                .drawBehind { drawLine(p.line, Offset(0f, 0f), Offset(size.width, 0f), 1.dp.toPx()) }
+                .navigationBarsPadding().height(70.dp).padding(horizontal = 10.dp).padding(top = 8.dp),
+            verticalAlignment = Alignment.Bottom,
         ) {
-            NavItem("Inicio", Icons.Filled.Home, route == "home", Modifier.weight(1f)) { go("home") }
-            NavItem("Notas", Icons.Filled.StickyNote2, route.startsWith("notes"), Modifier.weight(1f)) { go("notes") }
-            Spacer(Modifier.weight(1f))
-            NavItem("Tareas", Icons.Filled.CheckCircle, route.startsWith("tasks"), Modifier.weight(1f)) { go("tasks") }
-            NavItem("Más", Icons.Filled.GridView, route == "more", Modifier.weight(1f)) { go("more") }
+            NavItem("Inicio", Icons.Outlined.Home, route == "home", Modifier.weight(1f)) { go("home") }
+            NavItem("Notas", Icons.Outlined.StickyNote2, route.startsWith("notes"), Modifier.weight(1f)) { go("notes") }
+            Spacer(Modifier.weight(0.9f))
+            NavItem("Tareas", Icons.Outlined.TaskAlt, route.startsWith("tasks"), Modifier.weight(1f)) { go("tasks") }
+            NavItem("Más", Icons.Outlined.GridView, route == "more", Modifier.weight(1f)) { go("more") }
         }
         Pressable(
-            Modifier.align(Alignment.TopCenter).offset(y = (-22).dp).size(62.dp),
-            color = p.primary, shadow = 5.dp, border = 2.5.dp, onClick = onCreate,
+            Modifier.align(Alignment.TopCenter).offset(y = (-18).dp).size(58.dp),
+            color = p.primary, borderColor = p.canvas, border = 4.dp, shape = CircleShape, onClick = onCreate,
         ) {
-            Box(Modifier.size(62.dp), contentAlignment = Alignment.Center) {
-                Icon(Icons.Filled.Add, "Crear", tint = p.onPrimary, modifier = Modifier.size(32.dp))
+            Box(Modifier.size(58.dp), contentAlignment = Alignment.Center) {
+                Icon(Icons.Filled.Add, "Crear", tint = p.onPrimary, modifier = Modifier.size(26.dp))
             }
         }
     }
@@ -253,17 +267,18 @@ private fun BottomBar(route: String, nav: NavHostController, onCreate: () -> Uni
 @Composable
 private fun NavItem(label: String, icon: ImageVector, selected: Boolean, modifier: Modifier, onClick: () -> Unit) {
     val p = LocalPalette.current
-    Column(
-        modifier.clip(BrutalShape).clickable(onClick = onClick).padding(vertical = 6.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+    Box(
+        modifier.padding(horizontal = 4.dp).height(60.dp)
+            .border(1.dp, if (selected) p.rule.copy(alpha = 0.5f) else p.line, ArchShape)
+            .clip(ArchShape).clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
     ) {
-        Box(
-            Modifier.clip(BrutalShape)
-                .then(if (selected) Modifier.background(p.canary).border(1.5.dp, p.line, BrutalShape) else Modifier)
-                .padding(horizontal = 14.dp, vertical = 3.dp),
-        ) { Icon(icon, label, tint = if (selected) Color(0xFF383838) else p.inkSoft, modifier = Modifier.size(22.dp)) }
-        Spacer(Modifier.height(3.dp))
-        Text(label.uppercase(), style = T.micro, color = if (selected) p.ink else p.inkSoft, maxLines = 1, overflow = TextOverflow.Clip)
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(top = 10.dp)) {
+            Icon(icon, label, tint = if (selected) p.ink else p.inkFaint, modifier = Modifier.size(20.dp))
+            Spacer(Modifier.height(4.dp))
+            Text(label.uppercase(), style = T.micro.copy(letterSpacing = T.micro.letterSpacing * 0.8f), color = if (selected) p.ink else p.inkFaint, maxLines = 1, overflow = TextOverflow.Clip)
+        }
+        if (selected) Box(Modifier.align(Alignment.BottomCenter).fillMaxWidth().height(3.dp).background(p.canary))
     }
 }
 
@@ -271,35 +286,17 @@ private data class CreateItem(val key: String, val label: String, val sub: Strin
 
 @Composable
 private fun CreateSheet(onDismiss: () -> Unit, onPick: (String) -> Unit) {
-    val p = LocalPalette.current
     val items = listOf(
-        CreateItem("note", "Nota", "en blanco", Icons.AutoMirrored.Filled.NoteAdd),
-        CreateItem("task", "Tarea", "con fecha", Icons.Filled.TaskAlt),
-        CreateItem("template", "Plantilla", "con estructura", Icons.Filled.Dashboard),
-        CreateItem("audio", "Audio", "nota de voz", Icons.Filled.Mic),
-        CreateItem("camera", "Foto", "con la cámara", Icons.Filled.PhotoCamera),
-        CreateItem("scan", "Escanear", "documentos", Icons.Filled.DocumentScanner),
-        CreateItem("sketch", "Boceto", "a mano alzada", Icons.Filled.Brush),
-        CreateItem("file", "Archivo", "PDF y más", Icons.Filled.AttachFile),
+        CreateItem("note", "Nota", "Una página en blanco", Icons.AutoMirrored.Outlined.NoteAdd),
+        CreateItem("task", "Tarea", "Con fecha y recordatorio", Icons.Outlined.TaskAlt),
+        CreateItem("template", "Desde plantilla", "Reunión, diario, viaje…", Icons.Outlined.Dashboard),
+        CreateItem("audio", "Nota de voz", "Grabá y escuchá después", Icons.Outlined.Mic),
+        CreateItem("camera", "Foto", "Con la cámara", Icons.Outlined.CameraAlt),
+        CreateItem("scan", "Escanear", "Documentos con recorte", Icons.Outlined.DocumentScanner),
+        CreateItem("sketch", "Boceto", "Dibujar a mano alzada", Icons.Outlined.Brush),
+        CreateItem("file", "Archivo", "PDF y otros", Icons.Outlined.AttachFile),
     )
     BrutalSheet(onDismiss, "Crear") {
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(14.dp), maxItemsInEachRow = 2) {
-            items.forEachIndexed { i, it ->
-                Pressable(Modifier.weight(1f), borderColor = crayon(i), border = 2.5.dp, shadow = 4.dp, onClick = { onPick(it.key) }) {
-                    Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Box(
-                            Modifier.size(38.dp).clip(BrutalShape).background(crayon(i)).border(1.5.dp, p.line, BrutalShape),
-                            contentAlignment = Alignment.Center,
-                        ) { Icon(it.icon, null, tint = Color(0xFF383838), modifier = Modifier.size(20.dp)) }
-                        Spacer(Modifier.size(10.dp))
-                        Column {
-                            Text(it.label.uppercase(), style = T.label, color = p.ink)
-                            Text(it.sub, style = T.caption, color = p.inkSoft, maxLines = 1)
-                        }
-                    }
-                }
-            }
-        }
-        Spacer(Modifier.height(8.dp))
+        items.forEach { SheetItem(it.icon, it.label, it.sub) { onPick(it.key) } }
     }
 }

@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.libreta.app.data.NoteItem
 import com.libreta.app.data.NotebookEntity
 import com.libreta.app.data.TagEntity
@@ -44,12 +45,15 @@ import com.libreta.app.util.Fmt
 
 @Composable
 fun NotebookSpine(nb: NotebookEntity?, modifier: Modifier = Modifier, size: Int = 34) {
-    val p = LocalPalette.current
     Box(
-        modifier.size(size.dp).clip(BrutalShape).background(crayon(nb?.color ?: 0)).border(1.5.dp, p.line, BrutalShape),
+        modifier.size(width = (size * 0.78f).dp, height = size.dp).clip(androidx.compose.foundation.shape.RoundedCornerShape(topStart = 3.dp, bottomStart = 3.dp, topEnd = 6.dp, bottomEnd = 6.dp))
+            .background(crayon(nb?.color ?: 0)),
         contentAlignment = Alignment.Center,
     ) {
-        Text(nb?.emoji ?: (nb?.name?.take(1)?.uppercase() ?: "?"), style = T.label, color = androidx.compose.ui.graphics.Color(0xFF383838))
+        Text(
+            nb?.name?.take(1)?.uppercase() ?: "?",
+            style = T.headingSm.copy(fontSize = (size * 0.5f).sp), color = androidx.compose.ui.graphics.Color(0xFFFBF8F1),
+        )
     }
 }
 

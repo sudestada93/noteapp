@@ -76,6 +76,10 @@ import com.libreta.app.ui.components.hardShadow
 import com.libreta.app.ui.theme.Dims
 import com.libreta.app.ui.theme.LocalPalette
 import com.libreta.app.ui.theme.Mono
+import com.libreta.app.ui.theme.Display
+import com.libreta.app.ui.theme.Ui
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.filled.Mic
 import com.libreta.app.ui.theme.Palette
 import com.libreta.app.ui.theme.T
 import com.libreta.app.ui.theme.crayon
@@ -98,13 +102,13 @@ data class EditorEnv(
 fun textStyleFor(type: BlockType, env: EditorEnv, p: Palette, checked: Boolean): TextStyle {
     val fam = editorFamily(env.fontIndex)
     val fs = env.fontSize
-    val base = TextStyle(fontFamily = fam, fontSize = fs.sp, lineHeight = (fs * 1.55f).sp, color = p.ink)
+    val base = TextStyle(fontFamily = fam, fontSize = fs.sp, lineHeight = (fs * 1.6f).sp, color = p.ink)
     return when (type) {
-        BlockType.H1 -> TextStyle(fontFamily = Mono, fontWeight = FontWeight.Bold, fontSize = (fs + 10).sp, lineHeight = (fs + 16).sp, color = p.ink, letterSpacing = 0.2.sp)
-        BlockType.H2 -> TextStyle(fontFamily = Mono, fontWeight = FontWeight.SemiBold, fontSize = (fs + 5).sp, lineHeight = (fs + 11).sp, color = p.ink)
-        BlockType.H3 -> TextStyle(fontFamily = Mono, fontWeight = FontWeight.SemiBold, fontSize = (fs + 1).sp, lineHeight = (fs + 7).sp, color = p.ink, letterSpacing = 0.6.sp)
-        BlockType.CODE -> TextStyle(fontFamily = Mono, fontSize = (fs - 2).sp, lineHeight = (fs * 1.45f).sp, color = Color(0xFFF4EFEA))
-        BlockType.QUOTE -> base.copy(fontStyle = FontStyle.Italic, color = p.ink)
+        BlockType.H1 -> TextStyle(fontFamily = Display, fontWeight = FontWeight.Medium, fontSize = (fs + 14).sp, lineHeight = (fs + 18).sp, color = p.ink)
+        BlockType.H2 -> TextStyle(fontFamily = Display, fontWeight = FontWeight.Medium, fontSize = (fs + 8).sp, lineHeight = (fs + 12).sp, color = p.ink)
+        BlockType.H3 -> TextStyle(fontFamily = Ui, fontWeight = FontWeight.SemiBold, fontSize = (fs - 3).sp, lineHeight = (fs + 4).sp, color = p.inkSoft, letterSpacing = 1.6.sp)
+        BlockType.CODE -> TextStyle(fontFamily = Mono, fontSize = (fs - 2.5f).sp, lineHeight = (fs * 1.45f).sp, color = Color(0xFFEFE8DA))
+        BlockType.QUOTE -> TextStyle(fontFamily = Display, fontStyle = FontStyle.Italic, fontSize = (fs + 5).sp, lineHeight = (fs + 11).sp, color = p.ink)
         BlockType.CHECK, BlockType.TASK -> if (checked) base.copy(color = p.inkFaint, textDecoration = TextDecoration.LineThrough) else base
         else -> base
     }
@@ -177,8 +181,8 @@ private fun TextBlock(block: EditorBlock, index: Int, vm: EditorViewModel, env: 
         when (type) {
             BlockType.BULLET -> Row(Modifier.padding(vertical = 2.dp)) {
                 Box(Modifier.width(24.dp).height((env.fontSize * 1.55f).dp), contentAlignment = Alignment.Center) {
-                    val shapeMod = if (block.indent % 2 == 0) Modifier.clip(CircleShape).background(p.ink) else Modifier.border(1.5.dp, p.ink, CircleShape)
-                    Box(Modifier.size(7.dp).then(shapeMod))
+                    val shapeMod = if (block.indent % 2 == 0) Modifier.clip(CircleShape).background(p.inkSoft) else Modifier.border(1.dp, p.inkSoft, CircleShape)
+                    Box(Modifier.size(5.dp).then(shapeMod))
                 }
                 field(Modifier.weight(1f))
             }
@@ -195,49 +199,42 @@ private fun TextBlock(block: EditorBlock, index: Int, vm: EditorViewModel, env: 
                     n
                 }
                 Box(Modifier.width(28.dp).height((env.fontSize * 1.55f).dp), contentAlignment = Alignment.CenterStart) {
-                    Text(if (block.indent % 2 == 0) "$number." else "${'a' + (number - 1) % 26}.", style = T.bodySm.copy(fontWeight = FontWeight.SemiBold), color = p.ink)
+                    Text(if (block.indent % 2 == 0) "$number." else "${'a' + (number - 1) % 26}.", style = TextStyle(fontFamily = Display, fontSize = (env.fontSize + 3).sp, fontWeight = FontWeight.Medium), color = p.inkSoft)
                 }
                 field(Modifier.weight(1f))
             }
             BlockType.CHECK -> Row(Modifier.padding(vertical = 3.dp)) {
                 Box(Modifier.width(30.dp).height((env.fontSize * 1.55f).dp), contentAlignment = Alignment.CenterStart) {
-                    CrayonCheckbox(block.checked, { vm.toggleCheck(block) }, size = 19.dp)
+                    CrayonCheckbox(block.checked, { vm.toggleCheck(block) }, size = 18.dp)
                 }
                 field(Modifier.weight(1f))
             }
             BlockType.TASK -> TaskRow(block, vm, env, field)
-            BlockType.QUOTE -> Row(Modifier.padding(vertical = 4.dp).height(IntrinsicSize.Min)) {
-                Box(Modifier.width(5.dp).fillMaxHeight().background(p.primary).border(1.dp, p.line))
-                Spacer(Modifier.width(14.dp))
+            BlockType.QUOTE -> Row(Modifier.padding(vertical = 8.dp).height(IntrinsicSize.Min)) {
+                Box(Modifier.width(2.dp).fillMaxHeight().background(p.canary))
+                Spacer(Modifier.width(16.dp))
                 field(Modifier.weight(1f))
             }
             BlockType.CODE -> Box(
-                Modifier.padding(vertical = 6.dp).fillMaxWidth().hardShadow(p.shadow, 3.dp)
-                    .clip(BrutalShape).background(Color(0xFF2A2927)).border(Dims.border, p.line, BrutalShape),
+                Modifier.padding(vertical = 8.dp).fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Color(0xFF1F1B16)),
             ) {
                 Column {
-                    Row(Modifier.fillMaxWidth().background(Color(0xFF383838)).padding(horizontal = 10.dp, vertical = 5.dp), verticalAlignment = Alignment.CenterVertically) {
-                        listOf(Color(0xFFF38E84), Color(0xFFFFDE00), Color(0xFF38C1B0)).forEach {
-                            Box(Modifier.size(8.dp).clip(CircleShape).background(it)); Spacer(Modifier.width(5.dp))
-                        }
-                        Spacer(Modifier.weight(1f))
-                        Text("CÓDIGO", style = T.micro, color = Color(0xFFA1A1A1))
-                    }
-                    Box(Modifier.horizontalScroll(rememberScrollState()).padding(12.dp)) { field(Modifier.widthIn(min = 280.dp).heightIn(min = 20.dp)) }
+                    Text("CÓDIGO", style = T.micro, color = Color(0xFF9A9286), modifier = Modifier.padding(start = 14.dp, top = 10.dp))
+                    Box(Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = 14.dp, vertical = 10.dp)) { field(Modifier.widthIn(min = 280.dp).heightIn(min = 20.dp)) }
                 }
             }
             BlockType.CALLOUT -> Row(
-                Modifier.padding(vertical = 6.dp).fillMaxWidth().hardShadow(p.shadow, 3.dp).clip(BrutalShape)
-                    .background(crayonWash(block.color + 1, p.dark)).border(Dims.border, p.line, BrutalShape).padding(12.dp),
+                Modifier.padding(vertical = 8.dp).fillMaxWidth().clip(RoundedCornerShape(14.dp))
+                    .background(if (block.color == 0) (if (p.dark) Color(0xFF2E2716) else Color(0xFFF6EAC6)) else crayonWash(block.color, p.dark)).padding(16.dp),
             ) {
                 var menu by remember { mutableStateOf(false) }
                 Box {
-                    Text("💡", fontSize = 18.sp, modifier = Modifier.clickable { menu = true }.padding(end = 10.dp))
+                    Text("✦", style = TextStyle(fontFamily = Display, fontSize = 20.sp), color = if (block.color == 0) p.canary else crayon(block.color), modifier = Modifier.clickable { menu = true }.padding(end = 12.dp))
                     DropdownMenu(menu, { menu = false }) {
                         (0 until 8).forEach { c ->
                             DropdownMenuItem(
-                                text = { Text(com.libreta.app.ui.theme.CrayonNames[(c + 1) % 8], style = T.body) },
-                                leadingIcon = { Box(Modifier.size(16.dp).background(crayon(c + 1)).border(1.dp, p.line)) },
+                                text = { Text(if (c == 0) "Mostaza" else com.libreta.app.ui.theme.CrayonNames[c], style = T.body) },
+                                leadingIcon = { Box(Modifier.size(14.dp).clip(CircleShape).background(if (c == 0) p.canary else crayon(c))) },
                                 onClick = { vm.setBlockColor(block, c); menu = false },
                             )
                         }
@@ -245,9 +242,9 @@ private fun TextBlock(block: EditorBlock, index: Int, vm: EditorViewModel, env: 
                 }
                 field(Modifier.weight(1f))
             }
-            BlockType.H1 -> Column(Modifier.padding(top = 14.dp, bottom = 4.dp)) { field(Modifier.fillMaxWidth()) }
-            BlockType.H2 -> Column(Modifier.padding(top = 10.dp, bottom = 2.dp)) { field(Modifier.fillMaxWidth()) }
-            BlockType.H3 -> Column(Modifier.padding(top = 8.dp, bottom = 2.dp)) { field(Modifier.fillMaxWidth()) }
+            BlockType.H1 -> Column(Modifier.padding(top = 18.dp, bottom = 4.dp)) { field(Modifier.fillMaxWidth()) }
+            BlockType.H2 -> Column(Modifier.padding(top = 14.dp, bottom = 2.dp)) { field(Modifier.fillMaxWidth()) }
+            BlockType.H3 -> Column(Modifier.padding(top = 12.dp, bottom = 2.dp)) { field(Modifier.fillMaxWidth()) }
             else -> field(Modifier.fillMaxWidth().padding(vertical = 2.dp))
         }
         // Menú de comandos "/"
@@ -264,8 +261,8 @@ private fun TextBlock(block: EditorBlock, index: Int, vm: EditorViewModel, env: 
 private fun SlashMenu(items: List<SlashCommand>, onPick: (SlashCommand) -> Unit) {
     val p = LocalPalette.current
     Column(
-        Modifier.padding(vertical = 6.dp).fillMaxWidth().hardShadow(p.shadow, 4.dp).clip(BrutalShape)
-            .background(p.surface).border(Dims.border, p.line, BrutalShape),
+        Modifier.padding(vertical = 6.dp).fillMaxWidth().clip(RoundedCornerShape(14.dp))
+            .background(p.surface).border(1.dp, p.line, RoundedCornerShape(14.dp)),
     ) {
         Text("INSERTAR BLOQUE", style = T.micro, color = p.inkSoft, modifier = Modifier.padding(start = 12.dp, top = 10.dp, bottom = 4.dp))
         items.take(8).forEachIndexed { i, c ->
@@ -273,7 +270,7 @@ private fun SlashMenu(items: List<SlashCommand>, onPick: (SlashCommand) -> Unit)
                 Modifier.fillMaxWidth().clickable { onPick(c) }.background(if (i == 0) p.iceWash else Color.Transparent).padding(horizontal = 12.dp, vertical = 9.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(c.label, style = T.body.copy(fontWeight = FontWeight.SemiBold), color = p.ink, modifier = Modifier.width(130.dp))
+                Text(c.label, style = T.subheading, color = p.ink, modifier = Modifier.width(130.dp))
                 Text(c.hint, style = T.caption, color = p.inkSoft, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
         }
@@ -285,33 +282,31 @@ private fun TaskRow(block: EditorBlock, vm: EditorViewModel, env: EditorEnv, fie
     val p = LocalPalette.current
     val overdue = block.dueAt?.let { it < System.currentTimeMillis() && !block.checked } ?: false
     Row(
-        Modifier.padding(vertical = 4.dp).fillMaxWidth().clip(BrutalShape)
-            .background(if (block.checked) Color.Transparent else p.surface.copy(alpha = 0.7f))
-            .border(1.5.dp, if (block.checked) p.inkFaint else p.line, BrutalShape).padding(horizontal = 10.dp, vertical = 8.dp),
+        Modifier.padding(vertical = 5.dp).fillMaxWidth().clip(RoundedCornerShape(12.dp))
+            .border(1.dp, p.line, RoundedCornerShape(12.dp)).padding(horizontal = 12.dp, vertical = 10.dp),
     ) {
         Box(Modifier.width(32.dp).height((env.fontSize * 1.55f).dp), contentAlignment = Alignment.CenterStart) {
-            CrayonCheckbox(block.checked, { vm.toggleCheck(block) }, size = 21.dp, round = true, color = p.primary)
+            CrayonCheckbox(block.checked, { vm.toggleCheck(block) }, size = 20.dp, round = true)
         }
         Column(Modifier.weight(1f)) {
             field(Modifier.fillMaxWidth())
             Row(Modifier.padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically) {
                 Row(
-                    Modifier.clip(BrutalShape).background(if (overdue) p.danger else if (block.dueAt != null) p.iceWash else Color.Transparent)
-                        .border(1.dp, if (block.dueAt != null) p.line else p.inkFaint, BrutalShape)
-                        .clickable { env.onTaskDue(block) }.padding(horizontal = 6.dp, vertical = 3.dp),
+                    Modifier.clip(RoundedCornerShape(50)).border(1.dp, if (overdue) p.danger else p.line, RoundedCornerShape(50))
+                        .clickable { env.onTaskDue(block) }.padding(horizontal = 9.dp, vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Icon(Icons.Filled.Alarm, null, tint = if (overdue) Color(0xFF383838) else p.inkSoft, modifier = Modifier.size(12.dp))
+                    Icon(Icons.Filled.Alarm, null, tint = if (overdue) p.danger else p.inkFaint, modifier = Modifier.size(12.dp))
                     Spacer(Modifier.width(4.dp))
                     Text(
                         block.dueAt?.let { Fmt.due(it) + if (block.reminderAt != null) " 🔔" else "" } ?: "FECHA",
-                        style = T.micro, color = if (overdue) Color(0xFF383838) else p.inkSoft,
+                        style = T.micro, color = if (overdue) p.danger else p.inkSoft,
                     )
                 }
                 Spacer(Modifier.width(8.dp))
                 Icon(
                     if (block.flagged) Icons.Filled.Flag else Icons.Filled.OutlinedFlag, "Bandera",
-                    tint = if (block.flagged) p.orange else p.inkFaint,
+                    tint = if (block.flagged) p.danger else p.inkFaint,
                     modifier = Modifier.size(20.dp).clickable { vm.toggleFlag(block) },
                 )
             }
@@ -325,7 +320,7 @@ private fun BlockMenu(block: EditorBlock, vm: EditorViewModel, extra: @Composabl
     var open by remember { mutableStateOf(false) }
     Box {
         Box(
-            Modifier.size(30.dp).clip(BrutalShape).background(p.surface).border(1.5.dp, p.line, BrutalShape).clickable { open = true },
+            Modifier.size(30.dp).clip(CircleShape).background(p.surface.copy(alpha = 0.9f)).border(1.dp, p.line, CircleShape).clickable { open = true },
             contentAlignment = Alignment.Center,
         ) { Icon(Icons.Filled.MoreVert, "Opciones", tint = p.ink, modifier = Modifier.size(18.dp)) }
         DropdownMenu(open, { open = false }) {
@@ -342,17 +337,11 @@ private fun BlockMenu(block: EditorBlock, vm: EditorViewModel, extra: @Composabl
 private fun DividerBlock(block: EditorBlock, vm: EditorViewModel) {
     val p = LocalPalette.current
     var open by remember { mutableStateOf(false) }
-    Box(Modifier.fillMaxWidth().height(28.dp).clickable { open = true }) {
-        androidx.compose.foundation.Canvas(Modifier.fillMaxWidth().height(28.dp)) {
-            val path = Path()
-            val mid = size.height / 2
-            path.moveTo(0f, mid)
-            var x = 0f
-            while (x <= size.width) {
-                path.lineTo(x, mid + sin(x / 9f) * 3.5f)
-                x += 3f
-            }
-            drawPath(path, p.ink, style = Stroke(2.dp.toPx()))
+    Box(Modifier.fillMaxWidth().clickable { open = true }) {
+        Row(Modifier.fillMaxWidth().height(36.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.weight(1f).height(1.dp).background(p.line))
+            Text("  ⁂  ", style = TextStyle(fontFamily = Display, fontSize = 18.sp), color = p.inkFaint)
+            Box(Modifier.weight(1f).height(1.dp).background(p.line))
         }
         DropdownMenu(open, { open = false }) {
             DropdownMenuItem({ Text("Eliminar separador", style = T.body) }, { vm.deleteBlock(block); open = false }, leadingIcon = { Icon(Icons.Filled.Delete, null) })
@@ -364,8 +353,8 @@ private fun DividerBlock(block: EditorBlock, vm: EditorViewModel) {
 private fun MediaFrame(content: @Composable () -> Unit) {
     val p = LocalPalette.current
     Box(
-        Modifier.padding(vertical = 8.dp).fillMaxWidth().hardShadow(p.shadow, 4.dp).clip(BrutalShape)
-            .background(p.surface).border(Dims.border, p.line, BrutalShape),
+        Modifier.padding(vertical = 8.dp).fillMaxWidth().clip(RoundedCornerShape(14.dp))
+            .background(p.surface).border(1.dp, p.line, RoundedCornerShape(14.dp)),
     ) { content() }
 }
 
@@ -387,8 +376,8 @@ private fun ImageBlock(block: EditorBlock, vm: EditorViewModel, env: EditorEnv) 
             }
             if (block.sketch) {
                 Text(
-                    "BOCETO", style = T.micro, color = Color(0xFF383838),
-                    modifier = Modifier.align(Alignment.BottomStart).padding(8.dp).background(Color(0xFFFFDE00)).border(1.dp, Color(0xFF383838)).padding(horizontal = 6.dp, vertical = 3.dp),
+                    "BOCETO", style = T.micro, color = p.inkSoft,
+                    modifier = Modifier.align(Alignment.BottomStart).padding(10.dp).clip(RoundedCornerShape(50)).background(p.surface).padding(horizontal = 8.dp, vertical = 3.dp),
                 )
             }
         }
@@ -409,17 +398,17 @@ private fun FileBlock(block: EditorBlock, vm: EditorViewModel) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Box(
-                    Modifier.size(42.dp).clip(BrutalShape).background(if (isPdf) p.danger else p.canary).border(1.5.dp, p.line, BrutalShape),
+                    Modifier.size(42.dp).clip(RoundedCornerShape(10.dp)).border(1.dp, p.line, RoundedCornerShape(10.dp)),
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
                         (block.name?.substringAfterLast('.', "")?.take(4) ?: "").uppercase().ifBlank { "FILE" },
-                        style = T.micro, color = Color(0xFF383838),
+                        style = T.micro, color = if (isPdf) p.danger else p.inkSoft,
                     )
                 }
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
-                    Text(block.name ?: "Archivo", style = T.body.copy(fontWeight = FontWeight.SemiBold), color = p.ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(block.name ?: "Archivo", style = T.subheading, color = p.ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     Text(Fmt.size(block.size) + " · tocar para abrir", style = T.caption, color = p.inkSoft)
                 }
                 BlockMenu(block, vm) { close ->
@@ -439,9 +428,9 @@ private fun AudioBlock(block: EditorBlock, vm: EditorViewModel) {
     MediaFrame {
         Column(Modifier.padding(12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("🎙", fontSize = 16.sp)
+                Icon(Icons.Filled.Mic, null, tint = p.inkSoft, modifier = Modifier.size(16.dp))
                 Spacer(Modifier.width(8.dp))
-                Text(block.name ?: "Audio", style = T.bodySm.copy(fontWeight = FontWeight.SemiBold), color = p.ink, modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(block.name ?: "Audio", style = T.subheading, color = p.ink, modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
                 BlockMenu(block, vm) { close ->
                     DropdownMenuItem({ Text("Compartir", style = T.body) }, { shareFile(context, file, block.mime); close() }, leadingIcon = { Icon(Icons.Filled.Share, null) })
                 }
@@ -457,14 +446,14 @@ private fun TableBlock(block: EditorBlock, vm: EditorViewModel, env: EditorEnv) 
     val p = LocalPalette.current
     MediaFrame {
         Column {
-            Row(Modifier.fillMaxWidth().background(p.canary).padding(horizontal = 10.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text("TABLA", style = T.micro, color = Color(0xFF383838), modifier = Modifier.weight(1f))
+            Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text("TABLA", style = T.micro, color = p.inkFaint, modifier = Modifier.weight(1f))
                 listOf("+FILA" to { vm.addRow(block) }, "+COL" to { vm.addColumn(block) }, "−FILA" to { vm.removeRow(block) }, "−COL" to { vm.removeColumn(block) }).forEach { (l, a) ->
-                    Text(l, style = T.micro, color = Color(0xFF383838), modifier = Modifier.clip(BrutalShape).clickable { a() }.padding(horizontal = 6.dp, vertical = 6.dp))
+                    Text(l, style = T.micro, color = p.inkSoft, modifier = Modifier.clip(RoundedCornerShape(50)).clickable { a() }.padding(horizontal = 6.dp, vertical = 8.dp))
                 }
                 BlockMenu(block, vm)
             }
-            Box(Modifier.fillMaxWidth().height(Dims.border).background(p.line))
+            Box(Modifier.fillMaxWidth().height(1.dp).background(p.line))
             Column(Modifier.horizontalScroll(rememberScrollState())) {
                 block.rows.forEachIndexed { r, row ->
                     Row(Modifier.height(IntrinsicSize.Min)) {
@@ -473,16 +462,16 @@ private fun TableBlock(block: EditorBlock, vm: EditorViewModel, env: EditorEnv) 
                                 value = cell,
                                 onValueChange = { vm.setCell(block, r, c, it) },
                                 textStyle = TextStyle(
-                                    fontFamily = if (r == 0) Mono else editorFamily(env.fontIndex),
+                                    fontFamily = if (r == 0) Ui else editorFamily(env.fontIndex),
                                     fontWeight = if (r == 0) FontWeight.SemiBold else FontWeight.Normal,
                                     fontSize = (env.fontSize - 2).sp, color = p.ink,
                                 ),
                                 cursorBrush = SolidColor(p.ink),
                                 modifier = Modifier.width(140.dp).fillMaxHeight()
-                                    .background(if (r == 0) p.iceWash else p.surface)
+                                    .background(if (r == 0) p.surfaceAlt else p.surface)
                                     .drawBehind {
-                                        drawLine(p.inkFaint, Offset(size.width, 0f), Offset(size.width, size.height), 1.dp.toPx())
-                                        drawLine(p.inkFaint, Offset(0f, size.height), Offset(size.width, size.height), 1.dp.toPx())
+                                        drawLine(p.line, Offset(size.width, 0f), Offset(size.width, size.height), 1.dp.toPx())
+                                        drawLine(p.line, Offset(0f, size.height), Offset(size.width, size.height), 1.dp.toPx())
                                     }
                                     .padding(10.dp),
                             )
@@ -499,17 +488,17 @@ private fun NoteLinkBlock(block: EditorBlock, vm: EditorViewModel, env: EditorEn
     val p = LocalPalette.current
     val target = env.notes.firstOrNull { it.note.id == block.linkId }
     Row(
-        Modifier.padding(vertical = 6.dp).fillMaxWidth().hardShadow(p.shadow, 3.dp).clip(BrutalShape).background(p.iceWash)
-            .border(Dims.border, p.line, BrutalShape).clickable { block.linkId?.let(env.onOpenNote) }.padding(12.dp),
+        Modifier.padding(vertical = 6.dp).fillMaxWidth().clip(RoundedCornerShape(12.dp))
+            .border(1.dp, p.line, RoundedCornerShape(12.dp)).clickable { block.linkId?.let(env.onOpenNote) }.padding(14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(Icons.Filled.Link, null, tint = p.ink, modifier = Modifier.size(20.dp))
+        Icon(Icons.Filled.Link, null, tint = p.art, modifier = Modifier.size(20.dp))
         Spacer(Modifier.width(10.dp))
         Column(Modifier.weight(1f)) {
             Text("ENLACE A NOTA", style = T.micro, color = p.inkSoft)
             Text(
                 target?.note?.title?.ifBlank { "Sin título" } ?: (block.name ?: "Nota eliminada"),
-                style = T.body.copy(fontWeight = FontWeight.SemiBold), color = if (target == null) p.inkFaint else p.ink,
+                style = T.headingSm, color = if (target == null) p.inkFaint else p.ink,
                 maxLines = 1, overflow = TextOverflow.Ellipsis,
             )
         }

@@ -65,7 +65,7 @@ class ReminderReceiver : BroadcastReceiver() {
             }
             val n = NotificationCompat.Builder(context, ReminderScheduler.CHANNEL)
                 .setSmallIcon(R.drawable.ic_stat_libreta)
-                .setColor(0xFF6FC2FF.toInt())
+                .setColor(0xFF4A2C17.toInt())
                 .setContentTitle(title)
                 .setContentText(text)
                 .setStyle(NotificationCompat.BigTextStyle().bigText(text))

@@ -97,6 +97,8 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 import java.io.File
 
+private val RoundedCornerShape50 = androidx.compose.foundation.shape.RoundedCornerShape(50)
+
 fun fileUri(context: Context, file: File) = FileProvider.getUriForFile(context, context.packageName + ".files", file)
 
 fun openFile(context: Context, file: File, mime: String?) {
@@ -176,8 +178,7 @@ fun AudioPlayer(file: File, durationMs: Long, waveform: List<Int>, modifier: Mod
     }
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
         Box(
-            Modifier.size(44.dp).hardShadow(p.shadow, 3.dp).clip(BrutalShape).background(p.primary)
-                .border(Dims.border, p.line, BrutalShape).clickable { toggle() },
+            Modifier.size(44.dp).clip(CircleShape).background(p.primary).clickable { toggle() },
             contentAlignment = Alignment.Center,
         ) { Icon(if (playing) Icons.Filled.Pause else Icons.Filled.PlayArrow, "Reproducir", tint = p.onPrimary) }
         Spacer(Modifier.width(12.dp))
@@ -258,15 +259,15 @@ fun RecorderDialog(repo: Repository, onDismiss: () -> Unit, onDone: (Block) -> U
     }
     Dialog(onDismissRequest = onDismiss) {
         Column(
-            Modifier.fillMaxWidth().hardShadow(p.shadow, 6.dp).clip(BrutalShape).background(p.surface).border(Dims.border, p.line, BrutalShape),
+            Modifier.fillMaxWidth().clip(androidx.compose.foundation.shape.RoundedCornerShape(22.dp)).background(p.surface).border(1.dp, p.line, androidx.compose.foundation.shape.RoundedCornerShape(22.dp)),
         ) {
-            Row(Modifier.fillMaxWidth().background(p.danger).padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                Box(Modifier.size(10.dp).clip(CircleShape).background(Color(0xFF383838)))
-                Spacer(Modifier.width(8.dp))
-                Text("GRABANDO", style = T.label, color = Color(0xFF383838))
+            Row(Modifier.fillMaxWidth().padding(start = 24.dp, end = 24.dp, top = 22.dp), verticalAlignment = Alignment.CenterVertically) {
+                Box(Modifier.size(9.dp).clip(CircleShape).background(p.danger))
+                Spacer(Modifier.width(10.dp))
+                Text("Grabando", style = T.heading, color = p.ink)
             }
             Column(Modifier.padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(Fmt.duration(elapsed), style = T.display, color = p.ink)
+                Text(Fmt.duration(elapsed), style = T.display.copy(fontSize = T.display.fontSize * 1.3f), color = p.ink)
                 Spacer(Modifier.height(12.dp))
                 Waveform(levels.takeLast(48), 1f, Modifier.fillMaxWidth().height(56.dp))
                 if (error != null) Text(error!!, style = T.bodySm, color = p.danger)
@@ -289,7 +290,7 @@ fun SketchDialog(repo: Repository, onDismiss: () -> Unit, onDone: (Block) -> Uni
     val p = LocalPalette.current
     val strokes = remember { mutableStateListOf<Stroke2>() }
     var current by remember { mutableStateOf<List<Offset>>(emptyList()) }
-    val inks = remember { listOf(Color(0xFF383838)) + Crayons }
+    val inks = remember { listOf(Color(0xFF1F1B16)) + Crayons }
     var color by remember { mutableStateOf(inks[0]) }
     var width by remember { mutableFloatStateOf(6f) }
     var eraser by remember { mutableStateOf(false) }
@@ -322,14 +323,14 @@ fun SketchDialog(repo: Repository, onDismiss: () -> Unit, onDone: (Block) -> Uni
             Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                 SquareIconButton(Icons.Filled.Close, "Cerrar", onDismiss)
                 Spacer(Modifier.width(12.dp))
-                Text("BOCETO", style = T.label, color = p.ink, modifier = Modifier.weight(1f))
+                Text("Boceto", style = T.heading, color = p.ink, modifier = Modifier.weight(1f))
                 SquareIconButton(Icons.AutoMirrored.Filled.Undo, "Deshacer", { if (strokes.isNotEmpty()) strokes.removeAt(strokes.lastIndex) })
                 Spacer(Modifier.width(10.dp))
                 BrutalButton("Insertar", { save() }, small = true)
             }
             Box(
                 Modifier.weight(1f).fillMaxWidth().padding(horizontal = 12.dp)
-                    .hardShadow(p.shadow, 5.dp).clip(BrutalShape).background(paper).border(Dims.border, p.line, BrutalShape),
+                    .clip(androidx.compose.foundation.shape.RoundedCornerShape(18.dp)).background(paper).border(1.dp, p.line, androidx.compose.foundation.shape.RoundedCornerShape(18.dp)),
             ) {
                 Canvas(
                     Modifier.fillMaxSize()
@@ -372,29 +373,29 @@ fun SketchDialog(repo: Repository, onDismiss: () -> Unit, onDone: (Block) -> Uni
             ) {
                 inks.forEach { c ->
                     Box(
-                        Modifier.size(34.dp).hardShadow(p.shadow, if (c == color && !eraser) 0.dp else 3.dp).clip(BrutalShape).background(c)
-                            .border(if (c == color && !eraser) 3.dp else 1.5.dp, p.line, BrutalShape)
+                        Modifier.size(34.dp).border(if (c == color && !eraser) 2.dp else 0.dp, if (c == color && !eraser) p.ink else Color.Transparent, CircleShape)
+                            .padding(4.dp).clip(CircleShape).background(c)
                             .clickable { color = c; eraser = false },
                     )
                 }
                 Spacer(Modifier.width(6.dp))
                 listOf(3f, 6f, 12f).forEach { w ->
                     Box(
-                        Modifier.size(34.dp).clip(BrutalShape).background(if (width == w) p.iceWash else p.surface)
-                            .border(if (width == w) 3.dp else 1.5.dp, p.line, BrutalShape).clickable { width = w },
+                        Modifier.size(34.dp).clip(CircleShape).background(if (width == w) p.iceWash else Color.Transparent)
+                            .border(1.dp, if (width == w) p.ink else p.line, CircleShape).clickable { width = w },
                         contentAlignment = Alignment.Center,
                     ) { Box(Modifier.size((w * 1.4f).dp.coerceAtMost(20.dp)).clip(CircleShape).background(p.ink)) }
                 }
                 Box(
-                    Modifier.height(34.dp).clip(BrutalShape).background(if (eraser) p.canary else p.surface)
-                        .border(if (eraser) 3.dp else 1.5.dp, p.line, BrutalShape).clickable { eraser = !eraser }.padding(horizontal = 10.dp),
+                    Modifier.height(34.dp).clip(RoundedCornerShape50).background(if (eraser) p.ink else Color.Transparent)
+                        .border(1.dp, if (eraser) p.ink else p.line, RoundedCornerShape50).clickable { eraser = !eraser }.padding(horizontal = 14.dp),
                     contentAlignment = Alignment.Center,
-                ) { Text("GOMA", style = T.micro, color = if (eraser) Color(0xFF383838) else p.ink) }
+                ) { Text("GOMA", style = T.micro, color = if (eraser) p.canvas else p.inkSoft) }
                 Box(
-                    Modifier.height(34.dp).clip(BrutalShape).background(p.surface)
-                        .border(1.5.dp, p.line, BrutalShape).clickable { strokes.clear() }.padding(horizontal = 10.dp),
+                    Modifier.height(34.dp).clip(RoundedCornerShape50)
+                        .border(1.dp, p.line, RoundedCornerShape50).clickable { strokes.clear() }.padding(horizontal = 14.dp),
                     contentAlignment = Alignment.Center,
-                ) { Text("LIMPIAR", style = T.micro, color = p.ink) }
+                ) { Text("LIMPIAR", style = T.micro, color = p.inkSoft) }
             }
         }
     }
@@ -458,8 +459,8 @@ fun PdfThumbnail(file: File, modifier: Modifier = Modifier) {
             Image(b, null, contentScale = ContentScale.FillWidth, modifier = Modifier.fillMaxWidth())
             if (pages > 1) {
                 Text(
-                    "$pages PÁGS", style = T.micro, color = Color(0xFF383838),
-                    modifier = Modifier.align(Alignment.TopEnd).padding(8.dp).background(Color(0xFFFFDE00)).border(1.dp, Color(0xFF383838)).padding(horizontal = 6.dp, vertical = 3.dp),
+                    "$pages PÁGS", style = T.micro, color = Color(0xFF1F1B16),
+                    modifier = Modifier.align(Alignment.TopEnd).padding(10.dp).clip(RoundedCornerShape50).background(Color(0xFFFBF8F1)).padding(horizontal = 8.dp, vertical = 3.dp),
                 )
             }
         }

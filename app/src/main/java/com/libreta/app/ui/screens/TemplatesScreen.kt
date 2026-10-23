@@ -124,28 +124,31 @@ fun TemplatesScreen(nav: Nav, notebookId: String?, onCreated: (String) -> Unit) 
         LibretaTopBar("Plantillas", onBack = nav.back, subtitle = "Empezá con estructura")
         LazyVerticalGrid(
             GridCells.Fixed(2),
-            contentPadding = PaddingValues(start = 20.dp, end = 16.dp, top = 16.dp, bottom = 120.dp),
+            contentPadding = PaddingValues(start = 22.dp, end = 22.dp, top = 18.dp, bottom = 120.dp),
             horizontalArrangement = Arrangement.spacedBy(14.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            if (custom.isNotEmpty()) item(span = { GridItemSpan(2) }) { Text("MIS PLANTILLAS", style = T.label, color = p.ink) }
+            item(span = { GridItemSpan(2) }) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                    com.libreta.app.ui.components.Engraving(com.libreta.app.ui.components.Art.BOOKS, Modifier.height(120.dp))
+                }
+            }
+            if (custom.isNotEmpty()) item(span = { GridItemSpan(2) }) { Text("MIS PLANTILLAS", style = T.micro, color = p.inkFaint) }
             items(all, key = { it.custom?.id ?: it.name }) { tpl ->
                 val i = all.indexOf(tpl)
-                Pressable(Modifier.fillMaxWidth(), color = p.surface, borderColor = crayon(i), border = 2.5.dp, onClick = { use(tpl) }, onLongClick = tpl.custom?.let { c -> { deleting = c } }) {
-                    Column(Modifier.padding(14.dp)) {
+                Pressable(Modifier.fillMaxWidth(), onClick = { use(tpl) }, onLongClick = tpl.custom?.let { c -> { deleting = c } }) {
+                    Column(Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(tpl.emoji, fontSize = 26.sp, modifier = Modifier.weight(1f))
-                            if (tpl.custom != null) BareIcon(Icons.Filled.Delete, "Eliminar", { deleting = tpl.custom }, tint = p.inkSoft)
+                            Text("%02d".format(i + 1), style = T.micro, color = p.inkFaint, modifier = Modifier.weight(1f))
+                            if (tpl.custom != null) BareIcon(Icons.Filled.Delete, "Eliminar", { deleting = tpl.custom }, tint = p.inkFaint)
                         }
-                        Spacer(Modifier.height(10.dp))
-                        Text(tpl.name.uppercase(), style = T.label, color = p.ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Spacer(Modifier.height(8.dp))
+                        Text(tpl.name, style = T.heading, color = p.ink, maxLines = 2, overflow = TextOverflow.Ellipsis)
                         Spacer(Modifier.height(6.dp))
                         Text(
                             BlockCodec.preview(tpl.blocks(), 80).ifBlank { tpl.blocks().filter { it.type.isText }.joinToString(" · ") { it.type.name.lowercase() } }.take(80),
                             style = T.caption, color = p.inkSoft, maxLines = 3, overflow = TextOverflow.Ellipsis,
                         )
-                        Spacer(Modifier.height(10.dp))
-                        Box(Modifier.fillMaxWidth().height(6.dp).background(crayon(i)))
                     }
                 }
             }

@@ -2,18 +2,16 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp" android:height="108dp"
     android:viewportWidth="108" android:viewportHeight="108">
-    <!-- hard offset shadow -->
-    <path android:fillColor="#383838" android:pathData="M33,37h42v44h-42z"/>
-    <!-- notebook cover -->
-    <path android:fillColor="#FFFFFF" android:strokeColor="#383838" android:strokeWidth="2.5"
-        android:pathData="M37,32h41v44h-41z"/>
-    <!-- spine -->
-    <path android:fillColor="#6FC2FF" android:strokeColor="#383838" android:strokeWidth="2.5"
-        android:pathData="M37,32h8v44h-8z"/>
-    <!-- lines -->
-    <path android:fillColor="#00000000" android:strokeColor="#383838" android:strokeWidth="2.5" android:strokeLineCap="square"
-        android:pathData="M51,44h20M51,52h20M51,60h12"/>
-    <!-- orange bookmark -->
-    <path android:fillColor="#FF9538" android:strokeColor="#383838" android:strokeWidth="2"
-        android:pathData="M66,32v16l4,-4l4,4v-16z"/>
+    <!-- arco -->
+    <path android:fillColor="#00000000" android:strokeColor="#1F1B16" android:strokeWidth="1.6"
+        android:pathData="M34,78 L34,48 A20,20 0 0,1 74,48 L74,78"/>
+    <path android:fillColor="#00000000" android:strokeColor="#1F1B16" android:strokeWidth="1.6" android:pathData="M30,78 L78,78"/>
+    <!-- libros apilados, tinta azul -->
+    <path android:fillColor="#2F55A4" android:pathData="M40,70h28v6h-28z"/>
+    <path android:fillColor="#2F55A4" android:pathData="M43,62h23v6h-23z"/>
+    <path android:fillColor="#4A2C17" android:pathData="M41,54h22v6h-22z"/>
+    <path android:fillColor="#00000000" android:strokeColor="#F5F0E6" android:strokeWidth="0.8"
+        android:pathData="M44,73h8M47,65h7M44,57h6"/>
+    <!-- marcador mostaza -->
+    <path android:fillColor="#E2B33F" android:pathData="M58,54h3v9l-1.5,-1.6l-1.5,1.6z"/>
 </vector>

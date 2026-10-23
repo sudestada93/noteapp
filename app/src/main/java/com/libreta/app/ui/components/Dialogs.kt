@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -66,31 +67,24 @@ fun BrutalDialog(
 ) {
     val p = LocalPalette.current
     Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
-        Box(Modifier.padding(horizontal = 24.dp).fillMaxWidth()) {
+        Box(Modifier.padding(horizontal = 26.dp).fillMaxWidth()) {
             Column(
                 Modifier
                     .fillMaxWidth()
-                    .hardShadow(p.shadow, 6.dp)
-                    .clip(BrutalShape)
+                    .clip(RoundedCornerShape(22.dp))
                     .background(p.surface)
-                    .border(Dims.border, p.line, BrutalShape),
+                    .border(1.dp, p.line, RoundedCornerShape(22.dp)),
             ) {
+                Text(title, style = T.heading, color = if (danger) p.danger else p.ink, modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 24.dp, bottom = 4.dp))
+                Column(Modifier.padding(horizontal = 24.dp, vertical = 12.dp).verticalScroll(rememberScrollState()), content = content)
                 Row(
-                    Modifier.fillMaxWidth().background(if (danger) p.danger else p.canary).padding(horizontal = 16.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(title.uppercase(), style = T.label, color = Color(0xFF383838))
-                }
-                Box(Modifier.fillMaxWidth().height(Dims.border).background(p.line))
-                Column(Modifier.padding(16.dp).verticalScroll(rememberScrollState()), content = content)
-                Row(
-                    Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End),
+                    Modifier.fillMaxWidth().padding(start = 16.dp, end = 20.dp, bottom = 20.dp, top = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.End),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     BrutalButton(dismissText, onDismiss, style = BtnStyle.Ghost)
                     if (confirmText != null && onConfirm != null) {
-                        BrutalButton(confirmText, onConfirm, style = if (danger) BtnStyle.Danger else BtnStyle.Primary, enabled = confirmEnabled)
+                        BrutalButton(confirmText, onConfirm, style = if (danger) BtnStyle.Danger else BtnStyle.Primary, enabled = confirmEnabled, small = true)
                     }
                 }
             }
@@ -134,22 +128,23 @@ fun BrutalSheet(onDismiss: () -> Unit, title: String? = null, content: @Composab
         onDismissRequest = onDismiss,
         sheetState = state,
         containerColor = p.canvas,
-        shape = BrutalShape,
+        shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp),
         dragHandle = {
-            Box(Modifier.padding(top = 10.dp, bottom = 6.dp).size(width = 44.dp, height = 5.dp).background(p.ink))
+            Box(Modifier.padding(top = 12.dp, bottom = 8.dp).size(width = 36.dp, height = 3.dp).clip(RoundedCornerShape(2.dp)).background(p.inkFaint))
         },
         tonalElevation = 0.dp,
+        scrimColor = Color(0x661F1B16),
     ) {
         Column(
             Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 24.dp)
                 .navigationBarsPadding()
-                .padding(bottom = 16.dp),
+                .padding(bottom = 18.dp),
         ) {
             if (title != null) {
-                Text(title.uppercase(), style = T.label, color = p.ink, modifier = Modifier.padding(bottom = 12.dp, top = 4.dp))
+                Text(title, style = T.heading, color = p.ink, modifier = Modifier.padding(bottom = 14.dp, top = 4.dp))
             }
             content()
         }
@@ -163,19 +158,16 @@ fun SheetItem(icon: ImageVector, text: String, subtitle: String? = null, tint: C
     Row(
         Modifier
             .fillMaxWidth()
-            .clip(BrutalShape)
             .clickable(onClick = onClick)
-            .padding(vertical = 12.dp, horizontal = 4.dp),
+            .hairlineBottom(p.line)
+            .padding(vertical = 13.dp, horizontal = 2.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
-            Modifier.size(34.dp).clip(BrutalShape).background(p.surface).border(Dims.borderThin, p.line, BrutalShape),
-            contentAlignment = Alignment.Center,
-        ) { Icon(icon, null, tint = tint, modifier = Modifier.size(18.dp)) }
-        Spacer(Modifier.width(14.dp))
+        Icon(icon, null, tint = if (tint == p.ink) p.inkSoft else tint, modifier = Modifier.size(19.dp))
+        Spacer(Modifier.width(16.dp))
         Column(Modifier.weight(1f)) {
-            Text(text, style = T.body, color = tint)
-            if (subtitle != null) Text(subtitle, style = T.caption, color = p.inkSoft)
+            Text(text, style = T.body.copy(fontSize = T.subheading.fontSize), color = tint)
+            if (subtitle != null) Text(subtitle, style = T.caption, color = p.inkFaint)
         }
         trailing?.invoke()
     }
@@ -212,7 +204,7 @@ fun DateTimePickerDialog(initial: Long?, onDismiss: () -> Unit, withTime: Boolea
                 }, small = true, modifier = Modifier.padding(8.dp))
             },
             dismissButton = { BrutalButton("Cancelar", onDismiss, style = BtnStyle.Ghost) },
-            shape = BrutalShape,
+            shape = RoundedCornerShape(22.dp),
             colors = DatePickerDefaults.colors(containerColor = p.surface),
         ) {
             DatePicker(

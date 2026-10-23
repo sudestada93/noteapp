@@ -60,6 +60,8 @@ import com.libreta.app.ui.components.NotebookPickerSheet
 import com.libreta.app.ui.components.PinPad
 import com.libreta.app.ui.components.SectionHeader
 import com.libreta.app.ui.components.TextInputDialog
+import com.libreta.app.ui.components.hairlineBottom
+import androidx.compose.ui.draw.clip
 import com.libreta.app.ui.components.rememberApp
 import com.libreta.app.ui.components.settingsState
 import com.libreta.app.ui.theme.LocalPalette
@@ -100,13 +102,13 @@ fun SettingsScreen(nav: Nav) {
         LibretaTopBar("Ajustes", onBack = nav.back)
         LazyColumn(contentPadding = PaddingValues(start = 20.dp, end = 16.dp, top = 16.dp, bottom = 120.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
             item {
-                BrutalCard(Modifier.fillMaxWidth(), color = p.canary) {
-                    Text("TU LIBRETA", style = T.micro, color = androidx.compose.ui.graphics.Color(0xFF383838))
-                    Spacer(Modifier.height(6.dp))
+                Column(Modifier.fillMaxWidth().clip(androidx.compose.foundation.shape.RoundedCornerShape(20.dp)).background(p.violet).padding(22.dp)) {
+                    Text("TU LIBRETA", style = T.micro, color = p.onViolet.copy(alpha = 0.6f))
+                    Spacer(Modifier.height(10.dp))
                     Row {
                         Stat("${notes.size}", "notas", Modifier.weight(1f))
                         Stat("${notebooks.size}", "libretas", Modifier.weight(1f))
-                        Stat("${tasks.count { it.done }}", "tareas hechas", Modifier.weight(1f))
+                        Stat("${tasks.count { it.done }}", "hechas", Modifier.weight(1f))
                         Stat("${notes.sumOf { it.note.wordCount }}", "palabras", Modifier.weight(1f))
                     }
                 }
@@ -119,21 +121,21 @@ fun SettingsScreen(nav: Nav) {
             item {
                 Group("Apariencia") {
                     Label("Tema")
-                    Pills(listOf("Sistema", "Papel", "Pizarra"), s.themeMode) { scope.launch { repo.prefs.setTheme(it) } }
+                    Pills(listOf("Sistema", "Papel", "Noche"), s.themeMode) { scope.launch { repo.prefs.setTheme(it) } }
                     Label("Tipografía del editor")
-                    Pills(listOf("Sans", "Mono", "Serif"), s.editorFont) { scope.launch { repo.prefs.setFont(it) } }
+                    Pills(listOf("Serif", "Sans", "Mono"), s.editorFont) { scope.launch { repo.prefs.setFont(it) } }
                     var size by remember(s.editorFontSize) { mutableFloatStateOf(s.editorFontSize) }
                     Label("Tamaño de texto · ${size.toInt()}")
                     Text("Así se verá tu nota.", style = T.body.copy(fontFamily = editorFamily(s.editorFont), fontSize = size.sp), color = p.ink)
                     Slider(
                         size, { size = it }, valueRange = 13f..22f, steps = 8,
                         onValueChangeFinished = { scope.launch { repo.prefs.setFontSize(size) } },
-                        colors = SliderDefaults.colors(thumbColor = p.ink, activeTrackColor = p.primary, inactiveTrackColor = p.surfaceAlt),
+                        colors = SliderDefaults.colors(thumbColor = p.primary, activeTrackColor = p.primary, inactiveTrackColor = p.line, activeTickColor = p.primary, inactiveTickColor = p.inkFaint),
                     )
                     Label("Papel")
                     Pills(listOf("Liso", "Rayado", "Cuadriculado", "Punteado"), s.paperStyle) { scope.launch { repo.prefs.setPaper(it) } }
                     Label("Vista de notas")
-                    Pills(listOf("Lista", "Tarjetas", "Grilla", "Compacta"), s.listView) { scope.launch { repo.prefs.setListView(it) } }
+                    Pills(listOf("Lista", "Fichas", "Grilla", "Compacta"), s.listView) { scope.launch { repo.prefs.setListView(it) } }
                 }
             }
             item {
@@ -183,7 +185,7 @@ fun SettingsScreen(nav: Nav) {
             item {
                 Group("Acerca de") {
                     Item("Libreta", "Versión ${BuildConfig.VERSION_NAME}") {}
-                    Item("Licencias", "JetBrains Mono e IBM Plex (SIL OFL 1.1)") { dialog = "licenses" }
+                    Item("Licencias", "Cormorant, Raleway, IBM Plex y JetBrains Mono (SIL OFL 1.1)") { dialog = "licenses" }
                     Item("Código fuente", "github.com/sudestada93/noteapp") {
                         runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/sudestada93/noteapp"))) }
                     }
@@ -225,16 +227,16 @@ fun SettingsScreen(nav: Nav) {
 @Composable
 private fun Stat(v: String, l: String, modifier: Modifier) {
     Column(modifier) {
-        Text(v, style = T.headingSm, color = androidx.compose.ui.graphics.Color(0xFF383838))
-        Text(l.uppercase(), style = T.micro, color = androidx.compose.ui.graphics.Color(0xFF383838))
+        Text(v, style = T.headingLg, color = LocalPalette.current.onViolet)
+        Text(l.uppercase(), style = T.micro, color = LocalPalette.current.onViolet.copy(alpha = 0.7f))
     }
 }
 
 @Composable
 private fun Group(title: String, content: @Composable () -> Unit) {
     Column {
-        SectionHeader(title)
-        BrutalCard(Modifier.fillMaxWidth(), padding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)) { content() }
+        Text(title, style = T.heading, color = LocalPalette.current.ink, modifier = Modifier.padding(top = 8.dp, bottom = 4.dp))
+        Column(Modifier.fillMaxWidth()) { content() }
     }
 }
 
@@ -253,9 +255,9 @@ private fun Pills(options: List<String>, selected: Int, onSelect: (Int) -> Unit)
 @Composable
 private fun Item(title: String, subtitle: String?, onClick: () -> Unit) {
     val p = LocalPalette.current
-    Row(Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.fillMaxWidth().clickable(onClick = onClick).hairlineBottom(p.line).padding(vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {
-            Text(title, style = T.body.copy(fontWeight = FontWeight.SemiBold), color = p.ink)
+            Text(title, style = T.subheading, color = p.ink)
             if (subtitle != null) Text(subtitle, style = T.caption, color = p.inkSoft)
         }
         Icon(Icons.Filled.ChevronRight, null, tint = p.inkSoft, modifier = Modifier.size(20.dp))
@@ -266,11 +268,11 @@ private fun Item(title: String, subtitle: String?, onClick: () -> Unit) {
 private fun Toggle(title: String, value: Boolean, onChange: (Boolean) -> Unit) {
     val p = LocalPalette.current
     Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(title, style = T.body.copy(fontWeight = FontWeight.SemiBold), color = p.ink, modifier = Modifier.weight(1f))
+        Text(title, style = T.subheading, color = p.ink, modifier = Modifier.weight(1f))
         Spacer(Modifier.width(8.dp))
         Switch(
             value, onChange,
-            colors = SwitchDefaults.colors(checkedTrackColor = p.primary, checkedThumbColor = p.surface, uncheckedTrackColor = p.surfaceAlt, uncheckedBorderColor = p.line, checkedBorderColor = p.line, uncheckedThumbColor = p.ink),
+            colors = SwitchDefaults.colors(checkedTrackColor = p.primary, checkedThumbColor = p.onPrimary, checkedBorderColor = p.primary, uncheckedTrackColor = androidx.compose.ui.graphics.Color.Transparent, uncheckedBorderColor = p.line, uncheckedThumbColor = p.inkFaint),
         )
     }
 }

@@ -145,6 +145,7 @@ import com.libreta.app.ui.components.Sticker
 import com.libreta.app.ui.components.TagPickerSheet
 import com.libreta.app.ui.components.TextInputDialog
 import com.libreta.app.ui.components.hardShadow
+import com.libreta.app.ui.components.hairlineBottom
 import com.libreta.app.ui.components.rememberApp
 import com.libreta.app.ui.components.settingsState
 import com.libreta.app.ui.theme.Crayons
@@ -314,8 +315,8 @@ fun EditorScreen(start: String?, onBack: () -> Unit, onOpenNote: (String) -> Uni
 
     Column(Modifier.fillMaxSize().background(p.canvas)) {
         // ---------- Barra superior ----------
-        Column(Modifier.fillMaxWidth().background(p.surface).windowInsetsPadding(WindowInsets.statusBars)) {
-            Row(Modifier.fillMaxWidth().height(56.dp).padding(horizontal = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.fillMaxWidth().background(p.canvas).windowInsetsPadding(WindowInsets.statusBars)) {
+            Row(Modifier.fillMaxWidth().height(58.dp).padding(horizontal = 6.dp), verticalAlignment = Alignment.CenterVertically) {
                 TopIcon(Icons.AutoMirrored.Filled.ArrowBack, "Atrás") { onBack() }
                 Column(Modifier.weight(1f).padding(start = 4.dp)) {
                     Text(item?.notebook?.name?.uppercase() ?: "NOTA", style = T.micro, color = p.inkSoft, maxLines = 1)
@@ -326,22 +327,21 @@ fun EditorScreen(start: String?, onBack: () -> Unit, onOpenNote: (String) -> Uni
                 }
                 TopIcon(Icons.AutoMirrored.Filled.Undo, "Deshacer", enabled = vm.canUndo) { vm.undo() }
                 TopIcon(Icons.AutoMirrored.Filled.Redo, "Rehacer", enabled = vm.canRedo) { vm.redo() }
-                TopIcon(if (note?.isShortcut == true) Icons.Filled.Star else Icons.Filled.StarBorder, "Atajo", tint = if (note?.isShortcut == true) p.orange else p.ink) {
+                TopIcon(if (note?.isShortcut == true) Icons.Filled.Star else Icons.Filled.StarBorder, "Atajo", tint = if (note?.isShortcut == true) p.canary else p.inkSoft) {
                     vm.meta { it.copy(isShortcut = !it.isShortcut) }
                 }
                 TopIcon(Icons.Filled.MoreVert, "Más") { sheet = "menu" }
             }
-            Box(Modifier.fillMaxWidth().height(Dims.border).background(p.line))
-            if (note != null && note.color >= 0) Box(Modifier.fillMaxWidth().height(6.dp).background(crayon(note.color)))
+            Box(Modifier.fillMaxWidth().height(1.dp).background(if (note != null && note.color >= 0) crayon(note.color) else p.line))
         }
         AnimatedVisibility(vm.findOpen) {
-            Row(Modifier.fillMaxWidth().background(p.canary).padding(horizontal = 12.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.fillMaxWidth().background(p.surfaceAlt).padding(horizontal = 16.dp, vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
                 BrutalTextField(vm.find, { vm.find = it }, placeholder = "Buscar en la nota", leading = Icons.Filled.FindInPage, modifier = Modifier.weight(1f))
                 Spacer(Modifier.width(10.dp))
                 val count = if (vm.find.isBlank()) 0 else vm.blocks.sumOf { b -> Regex(Regex.escape(vm.find), RegexOption.IGNORE_CASE).findAll(b.field.text).count() }
-                Text("$count", style = T.label, color = Color(0xFF383838))
+                Text("$count", style = T.label, color = p.inkSoft)
                 Spacer(Modifier.width(6.dp))
-                TopIcon(Icons.Filled.Close, "Cerrar", tint = Color(0xFF383838)) { vm.find = ""; vm.findOpen = false }
+                TopIcon(Icons.Filled.Close, "Cerrar", tint = p.inkSoft) { vm.find = ""; vm.findOpen = false }
             }
         }
 
@@ -370,7 +370,6 @@ fun EditorScreen(start: String?, onBack: () -> Unit, onOpenNote: (String) -> Uni
                             1 -> {
                                 var y = step * 3
                                 while (y < size.height) { drawLine(p.paperLine, Offset(0f, y), Offset(size.width, y), 1.dp.toPx()); y += step }
-                                drawLine(p.danger.copy(alpha = 0.35f), Offset(14.dp.toPx(), 0f), Offset(14.dp.toPx(), size.height), 1.dp.toPx())
                             }
                             2 -> {
                                 val g = 22.dp.toPx()
@@ -390,69 +389,47 @@ fun EditorScreen(start: String?, onBack: () -> Unit, onOpenNote: (String) -> Uni
                             }
                         }
                     }
-                    .padding(start = 24.dp, end = 18.dp, top = 18.dp),
+                    .padding(start = 26.dp, end = 22.dp, top = 22.dp),
             ) {
                 // Título
                 BasicTextField(
                     value = vm.title,
                     onValueChange = { vm.updateTitle(it) },
-                    textStyle = TextStyle(fontFamily = Mono, fontWeight = FontWeight.Bold, fontSize = 27.sp, lineHeight = 33.sp, color = p.ink, letterSpacing = 0.3.sp),
+                    textStyle = TextStyle(fontFamily = com.libreta.app.ui.theme.Display, fontWeight = FontWeight.Medium, fontSize = 36.sp, lineHeight = 40.sp, color = p.ink),
                     cursorBrush = SolidColor(p.ink),
                     modifier = Modifier.fillMaxWidth(),
                     decorationBox = { inner ->
                         Box {
-                            if (vm.title.text.isEmpty()) Text("Título", style = TextStyle(fontFamily = Mono, fontWeight = FontWeight.Bold, fontSize = 27.sp, color = p.inkFaint))
+                            if (vm.title.text.isEmpty()) Text("Título", style = TextStyle(fontFamily = com.libreta.app.ui.theme.Display, fontWeight = FontWeight.Medium, fontSize = 36.sp, color = p.inkFaint))
                             inner()
                         }
                     },
                 )
                 Spacer(Modifier.height(12.dp))
-                // Metadatos
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Row(
-                        Modifier.clip(BrutalShape).background(p.surface).border(1.5.dp, p.line, BrutalShape).clickable { sheet = "notebook" }.padding(end = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        NotebookSpine(item?.notebook, size = 26)
-                        Spacer(Modifier.width(8.dp))
-                        Text(item?.notebook?.name ?: "—", style = T.caption.copy(fontWeight = FontWeight.SemiBold), color = p.ink, maxLines = 1)
-                    }
-                    item?.tags?.forEachIndexed { i, t ->
-                        Sticker(t.name, crayon(t.color), rotation = if (i % 2 == 0) -1.5f else 1.2f, onClick = { sheet = "tags" })
-                    }
-                    Row(
-                        Modifier.clip(BrutalShape).border(1.5.dp, p.inkFaint, BrutalShape).clickable { sheet = "tags" }.padding(horizontal = 8.dp, vertical = 5.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(Icons.AutoMirrored.Filled.Label, null, tint = p.inkSoft, modifier = Modifier.size(14.dp))
-                        Spacer(Modifier.width(4.dp))
-                        Text("ETIQUETA", style = T.micro, color = p.inkSoft)
-                    }
-                    if (note?.reminderAt != null) {
-                        val done = note.reminderDone
-                        Row(
-                            Modifier.clip(BrutalShape).background(if (done) p.surfaceAlt else p.canary).border(1.5.dp, p.line, BrutalShape)
-                                .clickable { sheet = "reminder" }.padding(horizontal = 8.dp, vertical = 5.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Icon(Icons.Filled.Alarm, null, tint = Color(0xFF383838), modifier = Modifier.size(14.dp))
-                            Spacer(Modifier.width(4.dp))
-                            Text((if (done) "✓ " else "") + Fmt.due(note.reminderAt), style = T.micro, color = if (done) p.inkSoft else Color(0xFF383838))
-                        }
-                    }
-                    note?.sourceUrl?.let { url ->
-                        Row(
-                            Modifier.clip(BrutalShape).background(p.iceWash).border(1.5.dp, p.line, BrutalShape)
-                                .clickable { openUrl(context, url) }.padding(horizontal = 8.dp, vertical = 5.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Icon(Icons.Filled.Link, null, tint = p.ink, modifier = Modifier.size(14.dp))
-                            Spacer(Modifier.width(4.dp))
-                            Text(url.removePrefix("https://").removePrefix("http://").take(28), style = T.micro, color = p.ink, maxLines = 1)
-                        }
+                // Metadatos como ficha de índice
+                Box(Modifier.fillMaxWidth().height(1.dp).background(p.line))
+                com.libreta.app.ui.components.LedgerRow("Libreta", onClick = { sheet = "notebook" }) {
+                    Box(Modifier.size(7.dp).clip(androidx.compose.foundation.shape.CircleShape).background(crayon(item?.notebook?.color ?: 0)))
+                    Spacer(Modifier.width(8.dp))
+                    Text(item?.notebook?.name ?: "—", style = T.body, color = p.ink, maxLines = 1)
+                }
+                com.libreta.app.ui.components.LedgerRow("Etiquetas", onClick = { sheet = "tags" }) {
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.weight(1f)) {
+                        item?.tags?.forEach { t -> Sticker(t.name, crayon(t.color), onClick = { sheet = "tags" }) }
+                        Text("+ añadir", style = T.caption, color = p.inkFaint, modifier = Modifier.padding(vertical = 5.dp))
                     }
                 }
-                Spacer(Modifier.height(16.dp))
+                if (note?.reminderAt != null) {
+                    com.libreta.app.ui.components.LedgerRow("Aviso", onClick = { sheet = "reminder" }) {
+                        Text((if (note.reminderDone) "✓ " else "") + Fmt.due(note.reminderAt), style = T.body, color = if (note.reminderDone) p.inkFaint else p.ink)
+                    }
+                }
+                note?.sourceUrl?.let { url ->
+                    com.libreta.app.ui.components.LedgerRow("Fuente", onClick = { openUrl(context, url) }) {
+                        Text(url.removePrefix("https://").removePrefix("http://").take(40), style = T.body, color = p.art, maxLines = 1)
+                    }
+                }
+                Spacer(Modifier.height(20.dp))
                 vm.blocks.forEachIndexed { i, b ->
                     androidx.compose.runtime.key(b.id) { BlockView(b, i, vm, env) }
                 }
@@ -582,7 +559,7 @@ fun openUrl(context: android.content.Context, url: String) {
 @Composable
 private fun TopIcon(icon: ImageVector, desc: String, enabled: Boolean = true, tint: Color = LocalPalette.current.ink, onClick: () -> Unit) {
     Box(
-        Modifier.size(40.dp).clip(BrutalShape).clickable(enabled = enabled, onClick = onClick),
+        Modifier.size(42.dp).clip(androidx.compose.foundation.shape.CircleShape).clickable(enabled = enabled, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) { Icon(icon, desc, tint = if (enabled) tint else LocalPalette.current.inkFaint.copy(alpha = 0.5f), modifier = Modifier.size(22.dp)) }
 }
@@ -598,13 +575,13 @@ private fun FormatToolbar(vm: EditorViewModel, onInsert: () -> Unit, onBlockType
     val link = vm.linkAtCursor()
     val type = focusedBlock?.type
     Column(
-        Modifier.fillMaxWidth().background(p.surface)
-            .drawBehind { drawLine(p.line, Offset(0f, 0f), Offset(size.width, 0f), Dims.border.toPx()) }
+        Modifier.fillMaxWidth().background(p.canvas)
+            .drawBehind { drawLine(p.line, Offset(0f, 0f), Offset(size.width, 0f), 1.dp.toPx()) }
             .windowInsetsPadding(WindowInsets.ime.union(WindowInsets.navigationBars)),
     ) {
         if (link != null) {
             Row(
-                Modifier.fillMaxWidth().background(p.iceWash).clickable { openUrl(context, link) }.padding(horizontal = 12.dp, vertical = 6.dp),
+                Modifier.fillMaxWidth().background(p.surfaceAlt).clickable { openUrl(context, link) }.padding(horizontal = 16.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(Icons.AutoMirrored.Filled.OpenInNew, null, tint = p.ink, modifier = Modifier.size(16.dp))
@@ -617,7 +594,7 @@ private fun FormatToolbar(vm: EditorViewModel, onInsert: () -> Unit, onBlockType
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(
-                Modifier.size(38.dp).hardShadow(p.shadow, 2.dp).clip(BrutalShape).background(p.primary).border(1.5.dp, p.line, BrutalShape).clickable(onClick = onInsert),
+                Modifier.size(38.dp).clip(androidx.compose.foundation.shape.CircleShape).background(p.primary).clickable(onClick = onInsert),
                 contentAlignment = Alignment.Center,
             ) { Icon(Icons.Filled.Add, "Insertar", tint = p.onPrimary) }
             Spacer(Modifier.width(8.dp))
@@ -655,17 +632,18 @@ private fun FormatToolbar(vm: EditorViewModel, onInsert: () -> Unit, onBlockType
 private fun ToolBtn(icon: ImageVector, desc: String, active: Boolean, onClick: () -> Unit) {
     val p = LocalPalette.current
     Box(
-        Modifier.padding(horizontal = 1.dp).size(38.dp).clip(BrutalShape)
-            .then(if (active) Modifier.background(p.canary).border(1.5.dp, p.line, BrutalShape) else Modifier)
-            .clickable(onClick = onClick),
+        Modifier.padding(horizontal = 1.dp).size(40.dp).clip(androidx.compose.foundation.shape.CircleShape).clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
-    ) { Icon(icon, desc, tint = if (active) Color(0xFF383838) else p.ink, modifier = Modifier.size(21.dp)) }
+    ) {
+        Icon(icon, desc, tint = if (active) p.ink else p.inkSoft, modifier = Modifier.size(20.dp))
+        if (active) Box(Modifier.align(Alignment.BottomCenter).padding(bottom = 4.dp).size(width = 16.dp, height = 2.dp).background(p.canary))
+    }
 }
 
 @Composable
 private fun Sep() {
     val p = LocalPalette.current
-    Box(Modifier.padding(horizontal = 6.dp).size(width = 1.5.dp, height = 24.dp).background(p.inkFaint))
+    Box(Modifier.padding(horizontal = 6.dp).size(width = 1.dp, height = 20.dp).background(p.line))
 }
 
 @Composable
@@ -708,20 +686,7 @@ private fun InsertSheet(onDismiss: () -> Unit, onPick: (String) -> Unit) {
         InsertItem("weblink", "Enlace web", Icons.Filled.Public),
     )
     BrutalSheet(onDismiss, "Insertar") {
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalArrangement = Arrangement.spacedBy(12.dp), maxItemsInEachRow = 4) {
-            items.forEachIndexed { i, it ->
-                com.libreta.app.ui.components.Pressable(
-                    Modifier.weight(1f), color = p.surface, borderColor = crayon(i), border = 2.5.dp, shadow = 3.dp, onClick = { onPick(it.key) },
-                ) {
-                    Column(Modifier.fillMaxWidth().padding(vertical = 14.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(it.icon, null, tint = p.ink)
-                        Spacer(Modifier.height(6.dp))
-                        Text(it.label.uppercase(), style = T.micro, color = p.ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    }
-                }
-            }
-        }
-        Spacer(Modifier.height(8.dp))
+        items.forEach { SheetItem(it.icon, it.label) { onPick(it.key) } }
     }
 }
 
@@ -764,7 +729,7 @@ private fun ReminderSheet(current: Long?, done: Boolean, onDismiss: () -> Unit, 
     val p = LocalPalette.current
     BrutalSheet(onDismiss, "Recordatorio") {
         if (current != null) {
-            Text(Fmt.full(current), style = T.body.copy(fontWeight = FontWeight.SemiBold), color = p.ink, modifier = Modifier.padding(bottom = 8.dp))
+            Text(Fmt.full(current), style = T.headingSm, color = p.ink, modifier = Modifier.padding(bottom = 8.dp))
         }
         QuickDates(onPick)
         SheetItem(Icons.Filled.Alarm, "Elegir fecha y hora…", onClick = onCustom)
@@ -834,8 +799,7 @@ private fun HistorySheet(flow: kotlinx.coroutines.flow.Flow<List<NoteVersionEnti
         versions.forEach { v ->
             val preview = BlockCodec.preview(BlockCodec.decode(v.content), 90)
             Row(
-                Modifier.fillMaxWidth().padding(vertical = 5.dp).clip(BrutalShape).background(p.surface).border(1.5.dp, p.line, BrutalShape)
-                    .clickable { onPick(v) }.padding(12.dp),
+                Modifier.fillMaxWidth().clickable { onPick(v) }.hairlineBottom(p.line).padding(vertical = 12.dp),
             ) {
                 Column(Modifier.weight(1f)) {
                     Text(Fmt.full(v.savedAt), style = T.caption.copy(fontWeight = FontWeight.SemiBold), color = p.ink)

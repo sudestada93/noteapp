@@ -5,29 +5,28 @@
     android:background="@drawable/widget_bg"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingStart="16dp"
+    android:paddingStart="20dp"
     android:paddingTop="10dp"
-    android:paddingEnd="18dp"
-    android:paddingBottom="16dp">
+    android:paddingEnd="14dp"
+    android:paddingBottom="10dp">
 
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:fontFamily="monospace"
-        android:textStyle="bold"
-        android:text="LIBRETA"
-        android:textColor="#383838"
-        android:textSize="13sp" />
+        android:fontFamily="serif"
+        android:text="Libreta"
+        android:textColor="#1F1B16"
+        android:textSize="20sp" />
 
     <ImageView android:id="@+id/w_note" android:layout_width="40dp" android:layout_height="40dp" android:layout_marginStart="6dp"
-        android:background="@drawable/widget_btn_blue" android:padding="8dp" android:src="@drawable/ic_w_add" android:contentDescription="Nueva nota" />
+        android:background="@drawable/widget_btn_blue" android:padding="10dp" android:src="@drawable/ic_w_add" android:contentDescription="Nueva nota" />
     <ImageView android:id="@+id/w_task" android:layout_width="40dp" android:layout_height="40dp" android:layout_marginStart="6dp"
-        android:background="@drawable/widget_btn_mint" android:padding="8dp" android:src="@drawable/ic_w_check" android:contentDescription="Nueva tarea" />
+        android:background="@drawable/widget_btn_mint" android:padding="10dp" android:src="@drawable/ic_w_check" android:contentDescription="Nueva tarea" />
     <ImageView android:id="@+id/w_audio" android:layout_width="40dp" android:layout_height="40dp" android:layout_marginStart="6dp"
-        android:background="@drawable/widget_btn_coral" android:padding="8dp" android:src="@drawable/ic_w_mic" android:contentDescription="Audio" />
+        android:background="@drawable/widget_btn_coral" android:padding="10dp" android:src="@drawable/ic_w_mic" android:contentDescription="Audio" />
     <ImageView android:id="@+id/w_camera" android:layout_width="40dp" android:layout_height="40dp" android:layout_marginStart="6dp"
-        android:background="@drawable/widget_btn_yellow" android:padding="8dp" android:src="@drawable/ic_w_camera" android:contentDescription="Foto" />
+        android:background="@drawable/widget_btn_yellow" android:padding="10dp" android:src="@drawable/ic_w_camera" android:contentDescription="Foto" />
     <ImageView android:id="@+id/w_search" android:layout_width="40dp" android:layout_height="40dp" android:layout_marginStart="6dp"
-        android:background="@drawable/widget_btn_white" android:padding="8dp" android:src="@drawable/ic_w_search" android:contentDescription="Buscar" />
+        android:background="@drawable/widget_btn_white" android:padding="10dp" android:src="@drawable/ic_w_search" android:contentDescription="Buscar" />
 </LinearLayout>

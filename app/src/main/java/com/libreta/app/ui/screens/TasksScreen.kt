@@ -67,6 +67,7 @@ import com.libreta.app.ui.components.FilterPill
 import com.libreta.app.ui.components.LibretaTopBar
 import com.libreta.app.ui.components.SheetItem
 import com.libreta.app.ui.components.hardShadow
+import com.libreta.app.ui.components.hairlineBottom
 import com.libreta.app.ui.components.rememberApp
 import com.libreta.app.ui.editor.QuickDates
 import com.libreta.app.ui.theme.Dims
@@ -123,7 +124,7 @@ fun TasksScreen(nav: Nav, focusNew: Boolean) {
     Column(Modifier.fillMaxSize().background(p.canvas)) {
         LibretaTopBar("Tareas", subtitle = "${tasks.count { !it.done }} pendientes · ${tasks.count { it.done }} hechas")
         // Agregar rápido
-        Column(Modifier.fillMaxWidth().background(p.canary).padding(16.dp)) {
+        Column(Modifier.fillMaxWidth().padding(horizontal = 22.dp, vertical = 12.dp)) {
             BrutalTextField(
                 newTitle, { newTitle = it }, placeholder = "Agregar una tarea…", leading = Icons.Filled.Add,
                 modifier = Modifier.fillMaxWidth().focusRequester(fr),
@@ -138,8 +139,7 @@ fun TasksScreen(nav: Nav, focusNew: Boolean) {
                 BrutalButton("Agregar", { add() }, small = true, enabled = newTitle.isNotBlank())
             }
         }
-        Box(Modifier.fillMaxWidth().height(Dims.border).background(p.line))
-        LazyRow(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        LazyRow(contentPadding = PaddingValues(horizontal = 22.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             items(TaskFilters.size) { i ->
                 val (k, l) = TaskFilters[i]
                 FilterPill(l, filter == k, { filter = k })
@@ -148,14 +148,14 @@ fun TasksScreen(nav: Nav, focusNew: Boolean) {
         if (filtered.isEmpty()) {
             EmptyState(Doodle.TASKS, if (filter == "done") "Nada completado aún" else "Todo al día", "Agregá tareas acá arriba, o escribí \"[!] \" dentro de cualquier nota.")
         } else {
-            LazyColumn(contentPadding = PaddingValues(start = 20.dp, end = 16.dp, bottom = 120.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            LazyColumn(contentPadding = PaddingValues(start = 22.dp, end = 22.dp, bottom = 140.dp)) {
                 groups.forEach { (label, list) ->
                     item(key = "h_$label") {
-                        Text(
-                            "${label.uppercase()} · ${list.size}", style = T.label,
-                            color = if (label == "Vencidas") p.danger else p.ink,
-                            modifier = Modifier.padding(top = 10.dp, bottom = 2.dp),
-                        )
+                        Row(Modifier.padding(top = 22.dp, bottom = 4.dp), verticalAlignment = Alignment.Bottom) {
+                            Text(label, style = T.heading, color = if (label == "Vencidas") p.danger else p.ink)
+                            Spacer(Modifier.width(10.dp))
+                            Text("${list.size}", style = T.micro, color = p.inkFaint, modifier = Modifier.padding(bottom = 5.dp))
+                        }
                     }
                     items(list, key = { it.id }) { t ->
                         val noteTitle = t.noteId?.let { id -> notes.firstOrNull { it.note.id == id }?.note?.title?.ifBlank { "Sin título" } }
@@ -227,31 +227,29 @@ private fun SwipeTask(
             val dir = state.dismissDirection
             val bg by animateColorAsState(if (dir == SwipeToDismissBoxValue.EndToStart) p.danger else p.success, label = "swipe")
             Box(
-                Modifier.fillMaxSize().clip(BrutalShape).background(bg).border(Dims.border, p.line, BrutalShape).padding(horizontal = 20.dp),
+                Modifier.fillMaxSize().background(bg).padding(horizontal = 20.dp),
                 contentAlignment = if (dir == SwipeToDismissBoxValue.EndToStart) Alignment.CenterEnd else Alignment.CenterStart,
-            ) { Text(if (dir == SwipeToDismissBoxValue.EndToStart) "ELIMINAR" else if (t.done) "REABRIR" else "COMPLETAR", style = T.label, color = Color(0xFF383838)) }
+            ) { Text(if (dir == SwipeToDismissBoxValue.EndToStart) "ELIMINAR" else if (t.done) "REABRIR" else "COMPLETAR", style = T.label, color = p.canvas) }
         },
     ) {
         val overdue = !t.done && t.dueAt != null && t.dueAt < System.currentTimeMillis()
         Row(
-            Modifier.fillMaxWidth().hardShadow(p.shadow, if (t.done) 0.dp else 3.dp).clip(BrutalShape)
-                .background(if (t.done) p.surfaceAlt else p.surface).border(Dims.borderThin, if (t.done) p.inkFaint else p.line, BrutalShape)
-                .clickable(onClick = onClick).padding(horizontal = 14.dp, vertical = 12.dp),
+            Modifier.fillMaxWidth().background(p.canvas).clickable(onClick = onClick)
+                .hairlineBottom(p.line).padding(vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            CrayonCheckbox(t.done, onToggle, round = true, color = p.primary, size = 22.dp)
+            CrayonCheckbox(t.done, onToggle, round = true, size = 21.dp)
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Text(
-                    t.title, style = T.body.copy(fontWeight = FontWeight.Medium, textDecoration = if (t.done) TextDecoration.LineThrough else null),
+                    t.title, style = T.subheading.copy(fontWeight = FontWeight.Normal, textDecoration = if (t.done) TextDecoration.LineThrough else null),
                     color = if (t.done) p.inkFaint else p.ink, maxLines = 2, overflow = TextOverflow.Ellipsis,
                 )
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 3.dp)) {
                     t.dueAt?.let {
                         Text(
                             Fmt.due(it) + if (t.reminderAt != null) " 🔔" else "", style = T.micro,
-                            color = if (overdue) Color(0xFF383838) else p.inkSoft,
-                            modifier = Modifier.clip(BrutalShape).background(if (overdue) p.danger else Color.Transparent).padding(horizontal = if (overdue) 4.dp else 0.dp, vertical = 1.dp),
+                            color = if (overdue) p.danger else p.inkFaint,
                         )
                         Spacer(Modifier.width(8.dp))
                     }
@@ -262,7 +260,7 @@ private fun SwipeTask(
             }
             Icon(
                 if (t.flagged) Icons.Filled.Flag else Icons.Filled.OutlinedFlag, "Bandera",
-                tint = if (t.flagged) p.orange else p.inkFaint, modifier = Modifier.size(22.dp).clickable(onClick = onFlag),
+                tint = if (t.flagged) p.danger else p.line, modifier = Modifier.size(20.dp).clickable(onClick = onFlag),
             )
         }
     }

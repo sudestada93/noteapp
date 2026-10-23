@@ -90,29 +90,27 @@ fun NotebooksScreen(nav: Nav) {
         LibretaTopBar("Libretas", onBack = nav.back, subtitle = "${notebooks.size} libretas · ${notebooks.mapNotNull { it.stack }.distinct().size} pilas") {
             BareIcon(Icons.Filled.Add, "Nueva", { creating = true })
         }
-        LazyColumn(contentPadding = PaddingValues(start = 20.dp, end = 16.dp, top = 16.dp, bottom = 120.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        LazyColumn(contentPadding = PaddingValues(start = 22.dp, end = 22.dp, top = 18.dp, bottom = 140.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             val grouped = notebooks.groupBy { it.stack }.toSortedMap(nullsFirst<String>())
             grouped.forEach { (stack, list) ->
                 if (stack != null) item(key = "s_$stack") {
                     Row(Modifier.padding(top = 10.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Box(Modifier.size(width = 18.dp, height = 12.dp).background(p.ink))
-                        Spacer(Modifier.width(8.dp))
-                        Text("PILA · ${stack.uppercase()}", style = T.label, color = p.ink)
+                        Text(stack, style = T.headingLg.copy(fontWeight = FontWeight.Light), color = p.ink)
+                        Spacer(Modifier.width(10.dp))
+                        Text("PILA", style = T.micro, color = p.inkFaint)
                     }
                 }
                 items(list, key = { it.id }) { nb ->
                     val count = notes.count { it.note.notebookId == nb.id }
                     val last = notes.filter { it.note.notebookId == nb.id }.maxOfOrNull { it.note.updatedAt }
                     Pressable(Modifier.fillMaxWidth().animateItem(), onClick = { nav.openNotes(nb.id, null, null) }, onLongClick = { menuFor = nb }) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(Modifier.size(width = 16.dp, height = 68.dp).background(crayon(nb.color)))
-                            Box(Modifier.size(width = 2.dp, height = 68.dp).background(p.line))
-                            Spacer(Modifier.width(12.dp))
-                            NotebookSpine(nb, size = 40)
+                        Row(Modifier.padding(vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Spacer(Modifier.width(14.dp))
+                            NotebookSpine(nb, size = 48)
                             Spacer(Modifier.width(12.dp))
                             Column(Modifier.weight(1f)) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text(nb.name, style = T.subheading.copy(fontWeight = FontWeight.Bold), color = p.ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                    Text(nb.name, style = T.heading, color = p.ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
                                     if (settings.defaultNotebookId == nb.id) {
                                         Spacer(Modifier.width(6.dp))
                                         com.libreta.app.ui.components.Badge("predet.")
@@ -120,7 +118,7 @@ fun NotebooksScreen(nav: Nav) {
                                 }
                                 Text("$count notas" + (last?.let { " · " + Fmt.relative(it) } ?: ""), style = T.caption, color = p.inkSoft)
                             }
-                            if (nb.isShortcut) Icon(Icons.Filled.Star, null, tint = p.orange, modifier = Modifier.size(18.dp))
+                            if (nb.isShortcut) Icon(Icons.Filled.Star, null, tint = p.canary, modifier = Modifier.size(18.dp))
                             BareIcon(Icons.Filled.MoreVert, "Opciones", { menuFor = nb })
                         }
                     }
@@ -221,28 +219,27 @@ fun TagsScreen(nav: Nav) {
                 BrutalButton("Crear etiqueta", { creating = true }, icon = Icons.Filled.Add)
             }
         } else {
-            LazyColumn(contentPadding = PaddingValues(start = 20.dp, end = 16.dp, top = 16.dp, bottom = 120.dp)) {
+            LazyColumn(contentPadding = PaddingValues(start = 22.dp, end = 22.dp, top = 18.dp, bottom = 140.dp)) {
                 val byLetter = tags.groupBy { it.name.firstOrNull()?.uppercaseChar() ?: '#' }
                 byLetter.forEach { (letter, list) ->
                     item(key = "l_$letter") {
-                        Text(letter.toString(), style = T.heading, color = p.inkFaint, modifier = Modifier.padding(top = 8.dp, bottom = 8.dp))
+                        Text(letter.toString(), style = T.display, color = p.inkFaint, modifier = Modifier.padding(top = 8.dp, bottom = 6.dp))
                     }
                     item(key = "g_$letter") {
                         FlowRow(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             list.forEachIndexed { i, t ->
                                 val count = notes.count { n -> n.tags.any { it.id == t.id } }
                                 Pressable(
-                                    color = p.surface, shadow = 3.dp,
+                                    color = androidx.compose.ui.graphics.Color.Transparent, shape = com.libreta.app.ui.components.PillShape,
                                     onClick = { nav.openNotes(null, t.id, null) }, onLongClick = { menuFor = t },
-                                    modifier = Modifier.padding(bottom = 2.dp),
                                 ) {
                                     Row(Modifier.padding(horizontal = 10.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                                        Box(Modifier.size(12.dp).background(crayon(t.color)).border(1.dp, p.line))
+                                        Box(Modifier.size(7.dp).clip(androidx.compose.foundation.shape.CircleShape).background(crayon(t.color)))
                                         Spacer(Modifier.width(8.dp))
-                                        Text(t.name, style = T.body.copy(fontWeight = FontWeight.SemiBold), color = p.ink)
+                                        Text(t.name, style = T.subheading.copy(fontWeight = FontWeight.Normal), color = p.ink)
                                         Spacer(Modifier.width(8.dp))
-                                        Text("$count", style = T.micro, color = Color(0xFF383838), modifier = Modifier.background(crayon(t.color)).padding(horizontal = 5.dp, vertical = 2.dp))
-                                        if (t.isShortcut) { Spacer(Modifier.width(6.dp)); Icon(Icons.Filled.Star, null, tint = p.orange, modifier = Modifier.size(14.dp)) }
+                                        Text("$count", style = T.micro, color = p.inkFaint)
+                                        if (t.isShortcut) { Spacer(Modifier.width(6.dp)); Icon(Icons.Filled.Star, null, tint = p.canary, modifier = Modifier.size(14.dp)) }
                                     }
                                 }
                             }
@@ -295,19 +292,19 @@ fun TrashScreen(nav: Nav) {
         }
         if (settings.trashAutoDays > 0) {
             Text(
-                "Las notas se eliminan definitivamente tras ${settings.trashAutoDays} días.", style = T.caption, color = Color(0xFF383838),
-                modifier = Modifier.fillMaxWidth().background(p.canary).padding(horizontal = 16.dp, vertical = 8.dp),
+                "Las notas se eliminan definitivamente tras ${settings.trashAutoDays} días.", style = T.caption.copy(fontStyle = androidx.compose.ui.text.font.FontStyle.Italic), color = p.inkFaint,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 22.dp, vertical = 10.dp),
             )
         }
         if (trashed.isEmpty()) {
             EmptyState(Doodle.TRASH, "Papelera vacía", "Las notas eliminadas esperan acá antes de desaparecer.")
         } else {
-            LazyColumn(contentPadding = PaddingValues(start = 20.dp, end = 16.dp, top = 16.dp, bottom = 120.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            LazyColumn(contentPadding = PaddingValues(start = 22.dp, end = 22.dp, top = 18.dp, bottom = 140.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(trashed, key = { it.id }) { n ->
-                    Pressable(Modifier.fillMaxWidth().animateItem(), color = p.surfaceAlt, shadow = 3.dp) {
+                    Pressable(Modifier.fillMaxWidth().animateItem()) {
                         Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                             Column(Modifier.weight(1f)) {
-                                Text(n.title.ifBlank { "Sin título" }, style = T.body.copy(fontWeight = FontWeight.SemiBold), color = p.ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                Text(n.title.ifBlank { "Sin título" }, style = T.headingSm, color = p.ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
                                 Text(n.preview, style = T.caption, color = p.inkSoft, maxLines = 2, overflow = TextOverflow.Ellipsis)
                                 Text("Eliminada " + Fmt.relative(n.trashedAt ?: n.updatedAt), style = T.micro, color = p.inkFaint, modifier = Modifier.padding(top = 4.dp))
                             }
