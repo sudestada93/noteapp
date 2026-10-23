@@ -37,7 +37,7 @@ fun crayon(i: Int): Color = Crayons[((i % Crayons.size) + Crayons.size) % Crayon
 /** Versión pastel (para fondos) de un crayón. */
 fun crayonWash(i: Int, dark: Boolean): Color {
     val c = crayon(i)
-    return if (dark) c.copy(alpha = 0.22f) else Color(
+    return if (dark) androidx.compose.ui.graphics.lerp(Color(0xFF282725), c, 0.22f) else Color(
         red = c.red * 0.28f + 0.72f, green = c.green * 0.28f + 0.72f, blue = c.blue * 0.28f + 0.72f,
     )
 }
